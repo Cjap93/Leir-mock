@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leir — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F1EB;--bg-off:#EDE8DF;--ink:#2D2926;
+  --mid:rgba(45,41,38,.52);--dim:rgba(45,41,38,.36);
+  --walnut:#7A5C38;--rust:#B5623A;--sage:#7A8F6A;
+  --line:rgba(45,41,38,.1);--green:#3E5C2E;--green-bg:rgba(122,143,106,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--ink);color:#F5F1EB;padding:12px 4vw;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.topbar-brand{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:#F5F1EB;display:flex;align-items:center;gap:10px}
+.topbar-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,241,235,.4)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.saved-flash{font-family:'Space Mono',monospace;font-size:10px;color:#7ABD5E;letter-spacing:.05em;opacity:0;transition:opacity .3s;white-space:nowrap}
+.saved-flash.show{opacity:1}
+.topbar-user{font-size:12px;color:rgba(245,241,235,.55)}
+@media(max-width:600px){.topbar-user{display:none}}
+
+/* ── BUTTONS ── */
+.btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;border:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 16px;border-radius:2px;transition:background .18s,opacity .18s;min-height:44px;white-space:nowrap}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-ghost{background:transparent;color:rgba(245,241,235,.7);border:1px solid rgba(245,241,235,.2);min-height:36px;padding:7px 12px;font-size:12px}
+.btn-ghost:hover:not(:disabled){background:rgba(245,241,235,.08)}
+.btn-primary{background:var(--ink);color:var(--bg)}
+.btn-primary:hover:not(:disabled){background:var(--rust)}
+.btn-secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-secondary:hover:not(:disabled){border-color:var(--rust)}
+.btn-danger{background:#8B2020;color:#fff}
+.btn-danger:hover:not(:disabled){background:#6D1A1A}
+.btn-rust{background:var(--rust);color:#fff}
+.btn-rust:hover:not(:disabled){background:#9E4E2B}
+.btn-sm{min-height:38px;padding:8px 14px;font-size:12px}
+.btn-icon{min-height:44px;min-width:44px;padding:0;border-radius:50%;border:1px solid var(--line);background:none;color:var(--ink);font-size:18px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.btn-icon:hover{border-color:var(--rust)}
+
+/* ── DESKTOP TABS ── */
+.desktop-tabs{border-bottom:1px solid var(--line);display:flex;padding:0 4vw;background:var(--bg);overflow-x:auto;scrollbar-width:none}
+.desktop-tabs::-webkit-scrollbar{display:none}
+.desktop-tab{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;background:none;border:none;border-bottom:2px solid transparent;color:var(--mid);padding:12px 16px 13px;cursor:pointer;white-space:nowrap;transition:color .18s;min-height:44px}
+.desktop-tab.active{color:var(--ink);border-bottom-color:var(--rust)}
+.desktop-tab:hover{color:var(--ink)}
+@media(max-width:640px){.desktop-tabs{display:none}}
+
+/* ── MOBILE BOTTOM NAV ── */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:40;background:var(--ink);border-top:1px solid rgba(255,255,255,.08);padding:8px 0 max(8px,env(safe-area-inset-bottom))}
+.mobile-nav-inner{display:flex;justify-content:space-around}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:rgba(245,241,235,.45);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;padding:6px 12px;min-width:60px;transition:color .18s}
+.mobile-nav-btn.active{color:#F5F1EB}
+.mobile-nav-btn svg{width:22px;height:22px}
+@media(max-width:640px){.mobile-nav{display:block}}
+
+/* ── CONTENT ── */
+.content{max-width:1100px;margin:0 auto;padding:28px 4vw 100px}
+@media(max-width:640px){.content{padding:20px 4vw 120px}}
+
+/* ── SECTION HEADER ── */
+.sec-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+.sec-title{font-family:'Fraunces',serif;font-weight:400;font-size:26px}
+.sec-desc{font-size:13px;color:var(--mid);margin-top:4px}
+
+/* ── DAY TABS ── */
+.day-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:24px;overflow-x:auto;scrollbar-width:none}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{font-family:'Space Mono',monospace;font-size:11.5px;letter-spacing:.06em;background:none;border:none;color:var(--dim);font-weight:400;padding:12px 16px 14px;cursor:pointer;position:relative;white-space:nowrap;transition:color .18s;min-height:44px}
+.day-tab.active{color:var(--ink);font-weight:700}
+.day-tab.active::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--rust)}
+
+/* ── FORMS ── */
+.field-label{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:6px}
+input,textarea,select{width:100%;font-family:'Inter',sans-serif;font-size:16px;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:12px 14px;outline:none;border-radius:2px;appearance:none;-webkit-appearance:none;transition:border-color .18s;min-height:48px}
+textarea{resize:vertical;min-height:80px;font-size:15px}
+input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}}
+
+/* ── DISH ITEMS ── */
+.dish-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line)}
+.dish-item{background:var(--bg);padding:18px 18px;border-bottom:1px solid var(--line)}
+.dish-item-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px}
+.dish-tag{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.dish-tag .swatch{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tag-veg{color:#4D6040}.tag-veg .swatch{background:#7A8F6A}
+.tag-fish{color:#4E7190}.tag-fish .swatch{background:#4E7190}
+.tag-meat{color:var(--rust)}.tag-meat .swatch{background:var(--rust)}
+.tag-salad{color:var(--walnut)}.tag-salad .swatch{background:var(--walnut)}
+.dish-item-actions{display:flex;gap:6px;align-items:center}
+.link-btn{background:none;border:none;font-family:'Inter',sans-serif;font-size:13px;cursor:pointer;padding:4px 8px;color:var(--mid);text-decoration:underline;text-underline-offset:2px}
+.link-btn.danger{color:#8B2020}
+
+/* ── SAVED DISHES LIBRARY ── */
+.library-toggle{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border:1px solid var(--line);background:var(--bg-off);cursor:pointer;margin-top:12px}
+.library-toggle-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut)}
+.library-toggle svg{transition:transform .25s;flex-shrink:0}
+.library-toggle.open svg{transform:rotate(180deg)}
+.library-panel{display:none;border:1px solid var(--line);border-top:none;background:var(--bg)}
+.library-panel.open{display:block}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;background:var(--line)}
+.library-card{background:var(--bg);padding:14px 16px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:6px}
+.library-card:hover{background:var(--bg-off)}
+.library-card-name{font-family:'Fraunces',serif;font-weight:500;font-size:16px}
+.library-card-desc{font-size:12px;color:var(--mid);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.library-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+.library-card-price{font-family:'Space Mono',monospace;font-size:11px;color:var(--walnut)}
+.library-add-btn{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);background:var(--green-bg);border:none;padding:4px 10px;border-radius:20px;cursor:pointer}
+.library-empty{padding:28px;text-align:center;color:var(--dim);font-size:13px}
+.save-to-lib-btn{font-size:12px;color:var(--sage);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:4px 8px;white-space:nowrap}
+.save-to-lib-btn:hover{color:var(--walnut)}
+
+/* ── DRINK ITEMS ── */
+.drink-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line)}
+.drink-item{background:var(--bg);padding:16px 18px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr 140px auto;gap:12px;align-items:end}
+@media(max-width:520px){.drink-item{grid-template-columns:1fr 100px auto}}
+
+/* ── EVENT ITEMS ── */
+.event-list{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line)}
+.event-item{background:var(--bg);padding:16px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.event-item-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.event-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.event-date-badge{font-family:'Space Mono',monospace;font-size:11px;color:var(--walnut)}
+.event-time-badge{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim)}
+.badge{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:20px}
+.badge-open{color:var(--green);background:var(--green-bg)}
+.badge-private{color:var(--walnut);background:rgba(122,92,56,.1)}
+.badge-recurring{color:#4E7190;background:rgba(78,113,144,.1)}
+.badge-warn{color:var(--rust);background:rgba(181,98,58,.1)}
+.event-name{font-weight:600;font-size:14.5px}
+.event-desc{font-size:13px;color:var(--mid)}
+.event-actions{display:flex;gap:6px;flex-shrink:0}
+
+/* ── EVENT TEMPLATES ── */
+.template-section{margin-bottom:32px;padding:20px 18px;background:var(--bg-off);border:1px solid var(--line)}
+.template-section-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut);margin-bottom:14px}
+.template-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.template-card{background:var(--bg);padding:14px 16px;cursor:pointer;transition:background .18s;display:flex;flex-direction:column;gap:5px}
+.template-card:hover{background:var(--bg-off)}
+.template-name{font-weight:600;font-size:14px}
+.template-meta{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim)}
+
+/* ── ADMIN LIST ── */
+.admin-list{border:1px solid var(--line);margin-bottom:28px}
+.admin-item{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);background:var(--bg);gap:12px}
+.admin-name{font-weight:600;font-size:14.5px}
+.admin-username{font-family:'Space Mono',monospace;font-size:11px;color:var(--mid);margin-top:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.add-admin-box{border:1px solid var(--line);padding:22px 18px;background:var(--bg-off)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(45,41,38,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
+@media(min-width:640px){.modal-overlay{align-items:center;padding:24px}}
+.modal{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:12px 12px 0 0;padding:28px 20px;padding-bottom:max(28px,env(safe-area-inset-bottom))}
+@media(min-width:640px){.modal{border-radius:0;padding:28px 32px}}
+.modal-handle{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 20px}
+@media(min-width:640px){.modal-handle{display:none}}
+.modal-title{font-family:'Fraunces',serif;font-style:italic;font-size:22px;margin-bottom:22px}
+.modal-info{font-size:13px;color:var(--green);background:rgba(62,92,46,.07);border:1px solid rgba(62,92,46,.18);padding:10px 14px;margin-bottom:16px;line-height:1.5;border-radius:2px}
+.modal-warn{font-size:13px;color:var(--rust);background:rgba(181,98,58,.08);border:1px solid rgba(181,98,58,.25);padding:10px 14px;margin-bottom:16px;line-height:1.5}
+.modal-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.modal-actions .btn{flex:1;min-width:120px}
+
+/* ── CONFIRM ── */
+.confirm-overlay{position:fixed;inset:0;background:rgba(45,41,38,.6);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:640px){.confirm-overlay{align-items:center;padding:24px}}
+.confirm-box{background:var(--bg);width:100%;max-width:420px;padding:28px 20px;padding-bottom:max(28px,env(safe-area-inset-bottom));border-radius:12px 12px 0 0}
+@media(min-width:640px){.confirm-box{border-radius:0;padding:28px}}
+.confirm-msg{font-size:15px;line-height:1.6;margin-bottom:24px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions .btn{flex:1}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--line);margin:20px 0}
+.error-msg{font-size:13px;color:#8B2020;margin:8px 0;padding:10px 14px;background:rgba(139,32,32,.07);border:1px solid rgba(139,32,32,.15)}
+.subtitle-wrap{margin-bottom:22px}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    Leir
+    <span class="topbar-label">Admin</span>
+  </div>
+  <div class="topbar-right">
+    <span class="saved-flash" id="savedMsg">✓ Sparad</span>
+    <span class="topbar-user">Anna Svensson</span>
+    <button class="btn btn-ghost" onclick="showChangePw()">Lösenord</button>
+    <button class="btn btn-ghost" onclick="window.location='index.html'">Logga ut</button>
+  </div>
+</div>
+
+<!-- DESKTOP TABS -->
+<div class="desktop-tabs">
+  <button class="desktop-tab active" data-tab="menu">Meny</button>
+  <button class="desktop-tab" data-tab="drinks">Dryck</button>
+  <button class="desktop-tab" data-tab="events">Evenemang</button>
+  <button class="desktop-tab" data-tab="admins">Konton</button>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- MENY -->
+  <div id="tab-menu">
+    <div class="sec-header">
+      <div><h2 class="sec-title">Meny</h2><p class="sec-desc">Sparas när du lämnar ett fält.</p></div>
+    </div>
+    <div class="day-tabs" id="dayTabs">
+      <button class="day-tab active" data-day="mon">Mån</button>
+      <button class="day-tab" data-day="tue">Tis</button>
+      <button class="day-tab" data-day="wed">Ons</button>
+      <button class="day-tab" data-day="thu">Tor</button>
+      <button class="day-tab" data-day="fri">Fre</button>
+    </div>
+    <div id="menuPanel"></div>
+  </div>
+
+  <!-- DRYCK -->
+  <div id="tab-drinks" style="display:none">
+    <div class="sec-header">
+      <div><h2 class="sec-title">Dryck</h2></div>
+      <button class="btn btn-rust btn-sm" onclick="addDrink()">+ Lägg till</button>
+    </div>
+    <div class="drink-list" id="drinkList"></div>
+  </div>
+
+  <!-- EVENEMANG -->
+  <div id="tab-events" style="display:none">
+    <div class="sec-header">
+      <div><h2 class="sec-title">Evenemang</h2></div>
+      <button class="btn btn-rust btn-sm" onclick="openEventModal()">+ Nytt</button>
+    </div>
+    <div id="eventTab"></div>
+  </div>
+
+  <!-- KONTON -->
+  <div id="tab-admins" style="display:none">
+    <div class="sec-header">
+      <div><h2 class="sec-title">Adminkonton</h2><p class="sec-desc">Lösenord lagras aldrig i klartext.</p></div>
+    </div>
+    <div class="admin-list" id="adminList"></div>
+    <div class="add-admin-box">
+      <p style="font-weight:600;font-size:15px;margin-bottom:18px">Lägg till konto</p>
+      <div class="grid-3" style="margin-bottom:14px">
+        <div><label class="field-label">Namn</label><input type="text" id="newName" placeholder="Anna Svensson" autocomplete="off"></div>
+        <div><label class="field-label">Användarnamn</label><input type="text" id="newUsername" placeholder="anna.svensson" autocomplete="off"></div>
+        <div><label class="field-label">Lösenord</label><input type="password" id="newPassword" placeholder="Minst 6 tecken"></div>
+      </div>
+      <div class="error-msg" id="adminError" style="display:none"></div>
+      <button class="btn btn-rust btn-sm" onclick="addAdmin()">Skapa konto</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" data-tab="menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Meny
+    </button>
+    <button class="mobile-nav-btn" data-tab="drinks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3l1 8h6l1-8M7 12c0 4 2 7 5 7s5-3 5-7"/></svg>
+      Dryck
+    </button>
+    <button class="mobile-nav-btn" data-tab="events">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Event
+    </button>
+    <button class="mobile-nav-btn" data-tab="admins">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Konton
+    </button>
+  </div>
+</nav>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="eventModal" style="display:none" onclick="if(event.target===this)closeEventModal()">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="eventModalTitle">Nytt evenemang</div>
+
+    <div class="grid-2" style="margin-bottom:14px">
+      <div><label class="field-label">Datum</label><input type="date" id="evDate"></div>
+      <div>
+        <label class="field-label">Typ</label>
+        <select id="evType" onchange="updateEvUI()">
+          <option value="open">Öppet för alla</option>
+          <option value="private">Privat bokning</option>
+        </select>
+      </div>
+      <div><label class="field-label">Starttid</label><input type="time" id="evStart" value="18:00"></div>
+      <div><label class="field-label">Sluttid</label><input type="time" id="evEnd" value="22:00"></div>
+    </div>
+    <div style="margin-bottom:14px"><label class="field-label">Namn</label><input type="text" id="evName" placeholder="Eventets namn"></div>
+    <div style="margin-bottom:14px"><label class="field-label">Beskrivning</label><textarea id="evDesc" placeholder="Kort beskrivning…"></textarea></div>
+
+    <!-- Recurring -->
+    <div class="divider"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <label class="field-label" style="margin:0">Återkommande evenemang</label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="evRecurring" onchange="updateEvUI()" style="width:auto;min-height:auto;padding:0;border:none;accent-color:var(--rust)">
+        <span style="font-size:13px;color:var(--mid)">Aktivera</span>
+      </label>
+    </div>
+    <div id="recurringFields" style="display:none">
+      <div class="grid-2" style="margin-bottom:14px">
+        <div>
+          <label class="field-label">Upprepning</label>
+          <select id="evRecurType">
+            <option value="weekly">Varje vecka</option>
+            <option value="biweekly">Varannan vecka</option>
+            <option value="monthly">Varje månad</option>
+          </select>
+        </div>
+        <div><label class="field-label">Sista datum</label><input type="date" id="evRecurEnd"></div>
+      </div>
+    </div>
+
+    <div class="modal-info" id="evOpenInfo">Öppet-badge aktiveras automatiskt under evenemangstiden.</div>
+
+    <!-- Save as template -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <input type="checkbox" id="evSaveTemplate" style="width:auto;min-height:auto;padding:0;border:none;accent-color:var(--rust)">
+      <label for="evSaveTemplate" style="font-size:13px;color:var(--mid);cursor:pointer">Spara som mall för framtida bruk</label>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-sm" onclick="saveEvent()">Spara</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeEventModal()">Avbryt</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGE PW MODAL -->
+<div class="modal-overlay" id="changePwModal" style="display:none" onclick="if(event.target===this)closeChangePw()">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Byt lösenord</div>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:20px">
+      <div><label class="field-label">Nuvarande lösenord</label><input type="password" id="curPw" placeholder="••••••••" autocomplete="current-password"></div>
+      <div><label class="field-label">Nytt lösenord</label><input type="password" id="newPw" placeholder="Minst 6 tecken" autocomplete="new-password"></div>
+      <div><label class="field-label">Bekräfta</label><input type="password" id="confPw" placeholder="••••••••" autocomplete="new-password"></div>
+    </div>
+    <div class="error-msg" id="pwError" style="display:none"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary btn-sm" onclick="savePassword()">Spara</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeChangePw()">Avbryt</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="confirm-overlay" id="confirmModal" style="display:none">
+  <div class="confirm-box">
+    <p class="confirm-msg" id="confirmMsg"></p>
+    <div class="confirm-actions">
+      <button class="btn btn-danger btn-sm" id="confirmYes">Ja, ta bort</button>
+      <button class="btn btn-secondary btn-sm" onclick="closeConfirm()">Avbryt</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const MENU={
+  mon:{subtitle:'Veckan börjar tryggt',dishes:[
+    {type:'veg',name:'Friterad lasagne',price:'139:-',desc:'Tomatsås, rucolasallad och riven grana padano.'},
+    {type:'fish',name:'Smörstekt dagens fångst',price:'139:-',desc:'Remouladsås, dillkokt potatis, pepparrot och dill- & gurksallad.'},
+    {type:'meat',name:'BBQ-glaserad gårdsgris',price:'139:-',desc:"Friterad mac 'n cheese, chipotle skysås och spicy slaw."},
+    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
+  ]},
+  tue:{subtitle:'Smaker från öst & väst',dishes:[
+    {type:'veg',name:'Tikka masala',price:'139:-',desc:'Grönsaker och bönor med grillad halloumi, jasminris och koriander.'},
+    {type:'fish',name:'Laxfärserad dagens fångst',price:'139:-',desc:'Smörad skaldjursbuljong, saffransaioli och potatispuré.'},
+    {type:'meat',name:'Schnitzel',price:'139:-',desc:'Vispat västerbottensmör, rödvinsås, rostad potatis och gröna ärtor.'},
+    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
+  ]},
+  wed:{subtitle:'Halvvägs, med kraftiga smaker',dishes:[
+    {type:'veg',name:'Okonomiyaki',price:'139:-',desc:'Sesamkål, edamamebönor, jasminris, chilimajonäs och furikake.'},
+    {type:'fish',name:'Fisk- & skaldjursgryta',price:'139:-',desc:'Bohusländsk gryta med rotfrukter, aioli och vitlöksbröd.'},
+    {type:'meat',name:'Kalv wallenbergare',price:'139:-',desc:'Gräddsås, potatispuré, pressgurka och rårörda lingon.'},
+    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
+  ]},
+  thu:{subtitle:'Rotfrukter i centrum',dishes:[
+    {type:'veg',name:'Rotfruktsbiff',price:'139:-',desc:'Ört- & västerbottenostsås, puré på palsternacka och broccoli.'},
+    {type:'fish',name:'Vitvinspocherad fångst',price:'139:-',desc:'Puré på palsternacka, citronsås och broccoli.'},
+    {type:'meat',name:'Kycklingfärsbiff',price:'139:-',desc:'Currysås, jasminris, mangochutney, jordnötter och pak choy.'},
+    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
+  ]},
+  fri:{subtitle:'Veckan avslutas på topp',dishes:[
+    {type:'veg',name:'Sesampanerad rotselleri',price:'139:-',desc:'Rosmarin- & hallonsky-rostad svamp och potatispuré.'},
+    {type:'fish',name:'Dillrimmad dagens fångst',price:'139:-',desc:'Sandefjordsås, bakade tomater och potatispuré.'},
+    {type:'meat',name:'Grillad gårdsgris',price:'139:-',desc:'Bearnaisesås, tomatsallad, pommes frites och rödvinsås.'},
+    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
+  ]},
+};
+
+let drinks=[
+  {id:'d1',name:'Mineralvatten',price:'25:-'},
+  {id:'d2',name:'Läsk',price:'25:-'},
+];
+
+let events=[
+  {id:'e1',date:'2026-07-03',start:'18:00',end:'22:00',type:'open',name:'Sommarsupé på altanen',desc:'Tre-rätters meny med fokus på västkustens råvaror.'},
+  {id:'e2',date:'2026-07-09',start:'17:00',end:'23:00',type:'private',name:'Privat bokning',desc:'Lokalen är bokad för ett privat firande.'},
+  {id:'e3',date:'2026-07-16',start:'18:30',end:'21:30',type:'open',name:'Vinprovning: Rhônedalen',desc:'Fem viner, lätta tilltugg och kort guidning.',recurring:{type:'monthly',end:'2026-12-31'}},
+];
+
+// Saved dish library
+let dishLibrary=[
+  {id:'lib1',type:'veg',name:'Rödbetsbiff',price:'139:-',desc:'Smörsås, getost och rostad valnöt.'},
+  {id:'lib2',type:'meat',name:'Biff Rydberg',price:'149:-',desc:'Smörfräst oxfilé, potatistärningar, senap och rödlök.'},
+  {id:'lib3',type:'fish',name:'Gravlax med hovmästarsås',price:'139:-',desc:'Dillkokt potatis och kapris.'},
+  {id:'lib4',type:'salad',name:'Nicoise',price:'139:-',desc:'Tonfisk, ägg, oliver, haricots verts och kapris.'},
+];
+
+// Saved event templates
+let eventTemplates=[
+  {id:'t1',start:'18:00',end:'22:00',type:'open',name:'Temakvällar',desc:'Boka bord i förväg via telefon.'},
+  {id:'t2',start:'17:00',end:'23:00',type:'private',name:'Privat bokning',desc:'Lokalen är bokad för ett privat firande denna kväll.'},
+];
+
+let admins=[
+  {username:'admin',name:'Admin',mustChange:false},
+  {username:'anna.svensson',name:'Anna Svensson',mustChange:false},
+];
+
+const ME='anna.svensson';
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const TAG_CLS={veg:'tag-veg',fish:'tag-fish',meat:'tag-meat',salad:'tag-salad'};
+const TAG_LBL={veg:'Vegetariskt',fish:'Fisk',meat:'Kött',salad:'Sallad'};
+function tagHtml(t){return `<span class="dish-tag ${TAG_CLS[t]}"><span class="swatch"></span>${TAG_LBL[t]}</span>`;}
+
+function flash(){
+  const el=document.getElementById('savedMsg');
+  el.classList.add('show');
+  clearTimeout(flash._t);
+  flash._t=setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+// ── TAB SWITCHING ──────────────────────────────────────────────────
+function switchTab(tabName){
+  document.querySelectorAll('.desktop-tab,.mobile-nav-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.tab===tabName);
+  });
+  ['menu','drinks','events','admins'].forEach(id=>{
+    document.getElementById('tab-'+id).style.display=id===tabName?'block':'none';
+  });
+}
+document.querySelectorAll('.desktop-tab,.mobile-nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
+});
+
+// ── DAY TABS ──────────────────────────────────────────────────────
+let activeDay='mon';
+document.querySelectorAll('.day-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.day-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    activeDay=tab.dataset.day;
+    renderMenu();
+  });
+});
+
+// ── MENU RENDER ───────────────────────────────────────────────────
+const DAY_NAMES={mon:'Måndag',tue:'Tisdag',wed:'Onsdag',thu:'Torsdag',fri:'Fredag'};
+
+function renderMenu(){
+  const day=MENU[activeDay];
+  const panel=document.getElementById('menuPanel');
+
+  const dishRows=day.dishes.map((d,i)=>`
+    <div class="dish-item">
+      <div class="dish-item-top">
+        ${tagHtml(d.type)}
+        <div class="dish-item-actions">
+          <button class="save-to-lib-btn" onclick="saveDishToLibrary(${i})" title="Spara till bibliotek">⊕ Spara</button>
+          <button class="link-btn danger" onclick="confirmRemoveDish(${i})">Ta bort</button>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-bottom:10px">
+        <div>
+          <label class="field-label">Kategori</label>
+          <select onchange="saveDishField(${i},'type',this.value)">${['veg','fish','meat','salad'].map(t=>`<option value="${t}"${d.type===t?' selected':''}>${TAG_LBL[t]}</option>`).join('')}</select>
+        </div>
+        <div>
+          <label class="field-label">Namn</label>
+          <input type="text" value="${esc(d.name)}" onblur="saveDishField(${i},'name',this.value)" autocomplete="off">
+        </div>
+        <div>
+          <label class="field-label">Pris</label>
+          <input type="text" value="${esc(d.price)}" onblur="saveDishField(${i},'price',this.value)">
+        </div>
+      </div>
+      <div>
+        <label class="field-label">Beskrivning</label>
+        <textarea onblur="saveDishField(${i},'desc',this.value)">${esc(d.desc)}</textarea>
+      </div>
+    </div>
+  `).join('');
+
+  // Library section
+  const libCards=dishLibrary.length===0
+    ? '<div class="library-empty">Inga sparade rätter ännu. Spara en rätt med ⊕-knappen ovan.</div>'
+    : '<div class="library-grid">'+dishLibrary.map(d=>`
+        <div class="library-card" onclick="addDishFromLibrary('${d.id}')">
+          ${tagHtml(d.type)}
+          <div class="library-card-name">${esc(d.name)}</div>
+          <div class="library-card-desc">${esc(d.desc)}</div>
+          <div class="library-card-footer">
+            <span class="library-card-price">${esc(d.price)}</span>
+            <button class="library-add-btn" onclick="event.stopPropagation();addDishFromLibrary('${d.id}')">+ Lägg till</button>
+          </div>
+        </div>
+      `).join('')+'</div>';
+
+  panel.innerHTML=`
+    <div class="subtitle-wrap">
+      <label class="field-label">Undertitel för ${DAY_NAMES[activeDay]}</label>
+      <input type="text" value="${esc(day.subtitle)}" onblur="saveSubtitle(this.value)" autocomplete="off">
+    </div>
+    <div class="dish-list">${dishRows}</div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" onclick="addBlankDish()">+ Tom rätt</button>
+    </div>
+    <button class="library-toggle" id="libToggle" onclick="toggleLibrary()">
+      <span class="library-toggle-label">Bibliotek — sparade rätter (${dishLibrary.length})</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="library-panel" id="libraryPanel">${libCards}</div>
+  `;
+}
+
+function saveSubtitle(val){MENU[activeDay].subtitle=val;flash();}
+function saveDishField(idx,field,val){
+  MENU[activeDay].dishes[idx][field]=val;
+  if(field==='type')renderMenu();
+  else flash();
+}
+function addBlankDish(){
+  MENU[activeDay].dishes.push({type:'veg',name:'',price:'139:-',desc:''});
+  renderMenu();
+  // Scroll to bottom of dish list
+  setTimeout(()=>document.getElementById('menuPanel').scrollIntoView({block:'end',behavior:'smooth'}),50);
+}
+function confirmRemoveDish(idx){
+  showConfirm(`Ta bort "${MENU[activeDay].dishes[idx].name||'rätten'}"?`,()=>{
+    MENU[activeDay].dishes.splice(idx,1);renderMenu();flash();
+  });
+}
+
+// Library
+function toggleLibrary(){
+  const toggle=document.getElementById('libToggle');
+  const panel=document.getElementById('libraryPanel');
+  toggle.classList.toggle('open');
+  panel.classList.toggle('open');
+}
+function saveDishToLibrary(idx){
+  const d=MENU[activeDay].dishes[idx];
+  if(!d.name){alert('Ge rätten ett namn innan du sparar den.');return;}
+  const existing=dishLibrary.findIndex(x=>x.name===d.name);
+  if(existing>=0){if(!confirm(`"${d.name}" finns redan i biblioteket. Ersätt?`))return;dishLibrary.splice(existing,1);}
+  dishLibrary.push({id:'lib'+Date.now(),...d});
+  renderMenu();flash();
+}
+function addDishFromLibrary(id){
+  const d=dishLibrary.find(x=>x.id===id);
+  if(!d)return;
+  MENU[activeDay].dishes.push({type:d.type,name:d.name,price:d.price,desc:d.desc});
+  renderMenu();
+  // Keep library open
+  setTimeout(()=>{
+    const t=document.getElementById('libToggle');
+    const p=document.getElementById('libraryPanel');
+    if(!t.classList.contains('open')){t.classList.add('open');p.classList.add('open');}
+  },50);
+  flash();
+}
+
+renderMenu();
+
+// ── DRINKS ────────────────────────────────────────────────────────
+function renderDrinks(){
+  document.getElementById('drinkList').innerHTML=drinks.map(d=>`
+    <div class="drink-item">
+      <div>
+        <label class="field-label">Namn</label>
+        <input type="text" value="${esc(d.name)}" onblur="saveDrink('${d.id}','name',this.value)" autocomplete="off">
+      </div>
+      <div>
+        <label class="field-label">Pris</label>
+        <input type="text" value="${esc(d.price)}" onblur="saveDrink('${d.id}','price',this.value)">
+      </div>
+      <button class="btn btn-icon" style="align-self:flex-end;color:#8B2020;border-color:rgba(139,32,32,.2)" onclick="confirmRemoveDrink('${d.id}')">✕</button>
+    </div>
+  `).join('');
+}
+function saveDrink(id,field,val){drinks=drinks.map(d=>d.id===id?{...d,[field]:val}:d);flash();}
+function addDrink(){drinks.push({id:'d'+Date.now(),name:'',price:''});renderDrinks();}
+function confirmRemoveDrink(id){
+  const d=drinks.find(x=>x.id===id);
+  showConfirm(`Ta bort "${d?.name||'drycken'}"?`,()=>{drinks=drinks.filter(x=>x.id!==id);renderDrinks();flash();});
+}
+renderDrinks();
+
+// ── EVENTS ────────────────────────────────────────────────────────
+let editingEventId=null;
+
+function fmtRecur(r){
+  if(!r)return '';
+  const labels={weekly:'Varje vecka',biweekly:'Varannan vecka',monthly:'Varje månad'};
+  return `${labels[r.type]||r.type} till ${r.end}`;
+}
+
+function renderEvents(){
+  const tab=document.getElementById('eventTab');
+
+  // Templates section
+  const tplCards=eventTemplates.length===0
+    ? ''
+    : `<div class="template-section">
+        <div class="template-section-title">Mallar — klicka för att skapa event</div>
+        <div class="template-grid">
+          ${eventTemplates.map(t=>`
+            <div class="template-card" onclick="createFromTemplate('${t.id}')">
+              <span class="badge ${t.type==='open'?'badge-open':'badge-private'}">${t.type==='open'?'Öppet':'Privat'}</span>
+              <div class="template-name">${esc(t.name)}</div>
+              <div class="template-meta">${esc(t.start)}–${esc(t.end)}</div>
+              <div style="font-size:12px;color:var(--mid);margin-top:2px">${esc(t.desc)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+
+  // Upcoming events
+  const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=new Date()).sort((a,b)=>a.date.localeCompare(b.date));
+  const past=events.filter(e=>new Date(e.date+'T'+e.end)<new Date()).sort((a,b)=>b.date.localeCompare(a.date));
+
+  function evHtml(e){
+    return `<div class="event-item">
+      <div class="event-item-row">
+        <div style="flex-grow:1">
+          <div class="event-meta">
+            <span class="event-date-badge">${esc(e.date)}</span>
+            <span class="event-time-badge">${esc(e.start)}–${esc(e.end)}</span>
+            <span class="badge ${e.type==='open'?'badge-open':'badge-private'}">${e.type==='open'?'Öppet':'Privat'}</span>
+            ${e.recurring?`<span class="badge badge-recurring">${fmtRecur(e.recurring)}</span>`:''}
+          </div>
+        </div>
+        <div class="event-actions">
+          <button class="btn btn-secondary btn-sm" onclick="editEvent('${e.id}')">Redigera</button>
+          <button class="btn btn-danger btn-sm" onclick="confirmDeleteEvent('${e.id}')">Ta bort</button>
+        </div>
+      </div>
+      <div class="event-name">${esc(e.name)}</div>
+      <div class="event-desc">${esc(e.desc)}</div>
+    </div>`;
+  }
+
+  const upcomingHtml=upcoming.length
+    ? `<div style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut);margin-bottom:10px">Kommande (${upcoming.length})</div>
+       <div class="event-list" style="margin-bottom:24px">${upcoming.map(evHtml).join('')}</div>`
+    : `<div style="border:1px solid var(--line);padding:36px 20px;text-align:center;color:var(--dim);font-size:14px;margin-bottom:24px">Inga kommande evenemang.</div>`;
+
+  const pastHtml=past.length
+    ? `<details style="margin-top:8px">
+        <summary style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);cursor:pointer;padding:10px 0;list-style:none">Tidigare (${past.length})</summary>
+        <div class="event-list" style="margin-top:8px;opacity:.7">${past.map(evHtml).join('')}</div>
+      </details>`
+    : '';
+
+  tab.innerHTML=tplCards+upcomingHtml+pastHtml;
+}
+
+function openEventModal(id){
+  editingEventId=id||null;
+  const e=id?events.find(x=>x.id===id):{date:'',start:'18:00',end:'22:00',type:'open',name:'',desc:'',recurring:null};
+  document.getElementById('eventModalTitle').textContent=id?'Redigera evenemang':'Nytt evenemang';
+  document.getElementById('evDate').value=e.date||'';
+  document.getElementById('evType').value=e.type||'open';
+  document.getElementById('evStart').value=e.start||'18:00';
+  document.getElementById('evEnd').value=e.end||'22:00';
+  document.getElementById('evName').value=e.name||'';
+  document.getElementById('evDesc').value=e.desc||'';
+  const hasRecur=!!(e.recurring);
+  document.getElementById('evRecurring').checked=hasRecur;
+  document.getElementById('evRecurType').value=e.recurring?.type||'weekly';
+  document.getElementById('evRecurEnd').value=e.recurring?.end||'';
+  document.getElementById('evSaveTemplate').checked=false;
+  updateEvUI();
+  document.getElementById('eventModal').style.display='flex';
+}
+function createFromTemplate(id){
+  const t=eventTemplates.find(x=>x.id===id);
+  if(!t)return;
+  openEventModal();
+  document.getElementById('evType').value=t.type;
+  document.getElementById('evStart').value=t.start;
+  document.getElementById('evEnd').value=t.end;
+  document.getElementById('evName').value=t.name;
+  document.getElementById('evDesc').value=t.desc;
+  updateEvUI();
+}
+function editEvent(id){openEventModal(id);}
+function updateEvUI(){
+  const isOpen=document.getElementById('evType').value==='open';
+  document.getElementById('evOpenInfo').style.display=isOpen?'block':'none';
+  const isRecur=document.getElementById('evRecurring').checked;
+  document.getElementById('recurringFields').style.display=isRecur?'block':'none';
+}
+function closeEventModal(){document.getElementById('eventModal').style.display='none';}
+function saveEvent(){
+  const recurring=document.getElementById('evRecurring').checked
+    ?{type:document.getElementById('evRecurType').value,end:document.getElementById('evRecurEnd').value}
+    :null;
+  const e={
+    id:editingEventId||('e'+Date.now()),
+    date:document.getElementById('evDate').value,
+    start:document.getElementById('evStart').value,
+    end:document.getElementById('evEnd').value,
+    type:document.getElementById('evType').value,
+    name:document.getElementById('evName').value,
+    desc:document.getElementById('evDesc').value,
+    recurring,
+  };
+  if(document.getElementById('evSaveTemplate').checked){
+    const existing=eventTemplates.findIndex(t=>t.name===e.name);
+    const tpl={id:'t'+Date.now(),start:e.start,end:e.end,type:e.type,name:e.name,desc:e.desc};
+    if(existing>=0)eventTemplates[existing]=tpl;
+    else eventTemplates.push(tpl);
+  }
+  if(editingEventId){events=events.map(x=>x.id===editingEventId?e:x);}
+  else events.push(e);
+  events.sort((a,b)=>a.date.localeCompare(b.date));
+  closeEventModal();renderEvents();flash();
+}
+function confirmDeleteEvent(id){
+  const e=events.find(x=>x.id===id);
+  showConfirm(`Ta bort "${e?.name}"?`,()=>{events=events.filter(x=>x.id!==id);renderEvents();flash();});
+}
+renderEvents();
+
+// ── ADMINS ────────────────────────────────────────────────────────
+function renderAdmins(){
+  document.getElementById('adminList').innerHTML=admins.map(a=>`
+    <div class="admin-item">
+      <div>
+        <div class="admin-name">${esc(a.name)}</div>
+        <div class="admin-username">
+          @${esc(a.username)}
+          ${a.mustChange?'<span class="badge badge-warn">Byt lösenord</span>':''}
+          ${a.username===ME?'<span class="badge badge-open">Du</span>':''}
+        </div>
+      </div>
+      <button class="btn btn-danger btn-sm" ${a.username===ME?'disabled':''} onclick="confirmRemoveAdmin('${a.username}')">Ta bort</button>
+    </div>
+  `).join('');
+}
+function addAdmin(){
+  const name=document.getElementById('newName').value.trim();
+  const username=document.getElementById('newUsername').value.trim();
+  const password=document.getElementById('newPassword').value;
+  const errEl=document.getElementById('adminError');
+  errEl.style.display='none';
+  if(!name||!username||!password){errEl.textContent='Fyll i alla fält.';errEl.style.display='block';return;}
+  if(password.length<6){errEl.textContent='Lösenord måste vara minst 6 tecken.';errEl.style.display='block';return;}
+  if(admins.find(a=>a.username===username)){errEl.textContent='Användarnamnet är redan taget.';errEl.style.display='block';return;}
+  admins.push({username,name,mustChange:false});
+  ['newName','newUsername','newPassword'].forEach(id=>document.getElementById(id).value='');
+  renderAdmins();flash();
+}
+function confirmRemoveAdmin(username){
+  if(username===ME){return;}
+  const a=admins.find(x=>x.username===username);
+  showConfirm(`Ta bort kontot "${a?.name}" (@${username})?`,()=>{
+    admins=admins.filter(x=>x.username!==username);renderAdmins();flash();
+  });
+}
+renderAdmins();
+
+// ── CHANGE PW ─────────────────────────────────────────────────────
+function showChangePw(){document.getElementById('changePwModal').style.display='flex';}
+function closeChangePw(){
+  document.getElementById('changePwModal').style.display='none';
+  ['curPw','newPw','confPw'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pwError').style.display='none';
+}
+function savePassword(){
+  const nw=document.getElementById('newPw').value;
+  const cf=document.getElementById('confPw').value;
+  const errEl=document.getElementById('pwError');
+  errEl.style.display='none';
+  if(nw.length<6){errEl.textContent='Minst 6 tecken.';errEl.style.display='block';return;}
+  if(nw!==cf){errEl.textContent='Lösenorden matchar inte.';errEl.style.display='block';return;}
+  closeChangePw();flash();
+}
+
+// ── CONFIRM ───────────────────────────────────────────────────────
+let _confirmCb=null;
+function showConfirm(msg,cb){
+  _confirmCb=cb;
+  document.getElementById('confirmMsg').textContent=msg;
+  document.getElementById('confirmModal').style.display='flex';
+  document.getElementById('confirmYes').onclick=()=>{closeConfirm();if(_confirmCb)_confirmCb();};
+}
+function closeConfirm(){document.getElementById('confirmModal').style.display='none';_confirmCb=null;}
+document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target.id==='confirmModal')closeConfirm();});
+</script>
+</body>
+</html>
