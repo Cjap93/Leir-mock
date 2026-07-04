@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leir — Veckans Meny</title>
+<meta name="description" content="Lunchrestaurang i Göteborg. Ny meny varje vardag — vegetariskt, fisk, kött & sallad. Öppet 11.00–14.00, Ullevigatan 17–19.">
+<meta property="og:title" content="Leir — Veckans Meny">
+<meta property="og:description" content="Lunchrestaurang i Göteborg. Ny meny varje vardag, alltid lagad från grunden.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Restaurant","name":"Leir","telephone":"+46313031056","address":{"@type":"PostalAddress","streetAddress":"Ullevigatan 17-19","postalCode":"411 40","addressLocality":"Göteborg","addressCountry":"SE"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"11:00","closes":"14:00"}]}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F1EB;--bg-off:#EDE8DF;--ink:#2D2926;
+  --mid:rgba(45,41,38,.52);--dim:rgba(45,41,38,.36);
+  --walnut:#7A5C38;--rust:#B5623A;--sage:#7A8F6A;--blue:#4E7190;
+  --line:rgba(45,41,38,.1);--green:#3E5C2E;--green-bg:rgba(122,143,106,.13);
+  --sp:clamp(56px,8vw,120px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 5vw;background:rgba(245,241,235,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.logo{font-family:'Fraunces',serif;font-weight:500;font-size:20px}.logo em{font-style:italic;color:var(--rust)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.status{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;padding:6px 10px;border:1px solid var(--line)}
+.status.open{color:var(--green);border-color:rgba(62,92,46,.22);background:var(--green-bg)}
+.status.closed{color:var(--mid);background:rgba(45,41,38,.03)}
+.status .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.status.open .dot{background:#5A7A44;animation:blink 2.2s ease-in-out infinite}
+.status.closed .dot{background:var(--dim)}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(90,122,68,.4)}55%{box-shadow:0 0 0 4px rgba(90,122,68,0)}}
+.nav-links{display:flex;gap:20px}
+.nav-links a{color:var(--ink);text-decoration:none;font-size:14px;font-weight:500;position:relative;white-space:nowrap}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:-3px;width:0;height:1px;background:var(--rust);transition:width .22s}
+.nav-links a:hover::after{width:100%}
+@media(max-width:600px){.nav-links{display:none}}
+
+/* ── HERO ── */
+.hero{min-height:90svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5vw clamp(48px,8vw,96px);position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,transparent 55%,rgba(45,41,38,.05) 55%,rgba(45,41,38,.05) calc(55% + 1px),transparent calc(55% + 1px)),radial-gradient(ellipse 90% 70% at 75% 20%,rgba(181,98,58,.12),transparent 65%),radial-gradient(ellipse 60% 50% at 5% 80%,rgba(122,143,106,.1),transparent 60%)}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:18px;opacity:0;animation:rise .7s ease forwards .05s}
+.tick{width:22px;height:1px;background:var(--rust)}
+.eyebrow{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--walnut)}
+h1.hero-h1{font-family:'Fraunces',serif;font-weight:300;font-size:clamp(44px,11vw,108px);line-height:.93;letter-spacing:-.02em;opacity:0;animation:rise .85s ease forwards .18s}
+h1.hero-h1 em{font-style:italic;font-weight:400;color:var(--rust)}
+.hero-foot{margin-top:32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;opacity:0;animation:rise .85s ease forwards .36s}
+.btn-cta{font-weight:600;font-size:14px;color:var(--bg);background:var(--ink);padding:15px 24px;text-decoration:none;display:inline-flex;align-items:center;gap:9px;transition:background .2s;min-height:50px}
+.btn-cta:hover{background:var(--rust)}
+.hero-meta{font-family:'Space Mono',monospace;font-size:12px;line-height:1.8;color:var(--mid)}
+.hero-meta b{color:var(--ink)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.divider{height:1px;background:var(--line);margin:0 5vw}
+
+/* ── SECTIONS ── */
+.section{padding:var(--sp) 5vw 0;max-width:1200px;margin:0 auto}
+h2.sh{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(28px,5vw,48px)}
+.sec-eyebrow{display:block;margin-bottom:10px}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:28px}
+@media(max-width:700px){.about-grid{grid-template-columns:1fr;gap:28px}}
+.about-text p{font-size:15px;line-height:1.75;color:var(--mid);margin-top:14px;max-width:46ch}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+.stat{background:var(--bg);padding:24px 20px}
+.stat-num{font-family:'Fraunces',serif;font-style:italic;font-size:38px;font-weight:300;color:var(--rust);line-height:1}
+.stat-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:7px}
+
+/* ── MENU ── */
+.menu-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:14px}
+.menu-top p{max-width:38ch;color:var(--mid);font-size:14px;line-height:1.65}
+.day-tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:28px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.day-tabs::-webkit-scrollbar{display:none}
+.day-tab{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;background:none;border:none;color:var(--dim);padding:12px 16px 14px;cursor:pointer;position:relative;white-space:nowrap;transition:color .18s;min-height:44px;-webkit-tap-highlight-color:transparent}
+.day-tab[aria-selected=true]{color:var(--ink);font-weight:700}
+.day-tab[aria-selected=true]::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--rust)}
+.allergen{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mid);margin-bottom:24px}
+.allergen a{color:var(--walnut);font-weight:600}
+.day-panel{display:none;animation:fadeUp .35s ease}
+.day-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.panel-top{display:flex;align-items:center;gap:18px;margin-bottom:24px}
+.stamp{width:80px;height:80px;border:1.5px solid var(--rust);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transform:rotate(-7deg);position:relative;color:var(--rust);text-align:center;font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.08em}
+.stamp::before{content:'';position:absolute;inset:5px;border:1px dashed rgba(181,98,58,.4);border-radius:50%}
+.stamp-day{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:17px;letter-spacing:0;display:block;margin-top:1px}
+.panel-sub{font-family:'Fraunces',serif;font-weight:400;font-style:italic;font-size:19px;margin-bottom:3px}
+.panel-meta{font-size:12.5px;color:var(--dim)}
+
+/* ── DISH GRID — mobile-first ── */
+.dish-grid{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:680px){.dish-grid{grid-template-columns:1fr 1fr}}
+.dish{background:var(--bg);padding:20px 18px;display:flex;flex-direction:column;gap:10px;transition:background .2s}
+@media(min-width:680px){.dish{padding:28px 24px}}
+.dish:active{background:var(--bg-off)}
+@media(hover:hover){.dish:hover{background:var(--bg-off)}}
+.dish-tag{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.swatch{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tag-veg{color:#4D6040}.tag-veg .swatch{background:var(--sage)}
+.tag-fish{color:var(--blue)}.tag-fish .swatch{background:var(--blue)}
+.tag-meat{color:var(--rust)}.tag-meat .swatch{background:var(--rust)}
+.tag-salad{color:var(--walnut)}.tag-salad .swatch{background:var(--walnut)}
+.dish-name-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.dish-name{font-family:'Fraunces',serif;font-weight:500;font-size:19px;line-height:1.2}
+.dish-price{font-family:'Space Mono',monospace;font-size:13px;color:var(--walnut);white-space:nowrap}
+.dish-desc{font-size:13.5px;line-height:1.65;color:var(--mid)}
+
+/* ── DRINKS ── */
+.drink-list{max-width:340px;margin-top:20px}
+.drink-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+.drink-price{font-family:'Space Mono',monospace;font-size:13px;color:var(--walnut)}
+
+/* ── EVENTS ── */
+.events-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;flex-wrap:wrap;gap:14px}
+.events-right p{color:var(--mid);font-size:14px;line-height:1.65;margin-bottom:12px;max-width:42ch}
+.cal-btn{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.05em;background:none;border:1px solid var(--line);color:var(--ink);padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;transition:border-color .2s;min-height:44px}
+.cal-btn:hover{border-color:var(--rust)}
+.cal-btn svg{transition:transform .25s}
+.cal-btn.open svg{transform:rotate(180deg)}
+
+/* ── EVENT CARDS — mobile-first ── */
+.event-cards{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:700px){.event-cards{grid-template-columns:repeat(3,1fr)}}
+.event-card{background:var(--bg);padding:20px 18px;display:flex;flex-direction:column;gap:10px;transition:background .2s}
+@media(min-width:700px){.event-card{padding:24px 20px}}
+.event-card:active{background:var(--bg-off)}
+@media(hover:hover){.event-card:hover{background:var(--bg-off)}}
+.ev-type{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px 3px 7px;border-radius:20px;width:fit-content}
+.ev-type .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.ev-type.open{color:var(--green);background:var(--green-bg)}
+.ev-type.private{color:var(--walnut);background:rgba(122,92,56,.1)}
+.ev-date-row{display:flex;align-items:baseline;gap:8px}
+.ev-date{font-family:'Fraunces',serif;font-style:italic;font-weight:600;font-size:15px;color:var(--rust)}
+.ev-time{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--dim)}
+.ev-name{font-family:'Fraunces',serif;font-weight:500;font-size:17px;line-height:1.2}
+.ev-desc{font-size:13px;line-height:1.6;color:var(--mid);flex-grow:1}
+
+/* ── CALENDAR ── */
+.cal-wrap{overflow:hidden;max-height:0;transition:max-height .42s ease;margin-top:28px}
+.cal-wrap.open{max-height:900px}
+.calendar{border:1px solid var(--line);background:var(--bg)}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.cal-nav-btn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:border-color .2s;min-width:44px;min-height:44px}
+.cal-nav-btn:hover{border-color:var(--rust)}
+.cal-month{font-family:'Fraunces',serif;font-style:italic;font-size:18px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-wday{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);text-align:center;padding:10px 2px 7px;border-bottom:1px solid var(--line)}
+.cal-day{min-height:56px;padding:7px 5px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media(min-width:480px){.cal-day{min-height:70px;padding:8px 6px}}
+.cal-day:nth-child(7n){border-right:none}
+.cal-day.empty{background:rgba(45,41,38,.012)}
+.cal-num{font-family:'Space Mono',monospace;color:var(--dim);font-size:11px}
+.cal-day.today .cal-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700}
+.ev-dot-row{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.ev-dot{width:6px;height:6px;border-radius:50%}
+.ev-dot.open{background:#5A7A44}
+.ev-dot.private{background:var(--walnut)}
+.cal-ev-lbl{font-size:9px;color:var(--mid);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+@media(max-width:480px){.cal-ev-lbl{display:none}}
+.cal-legend{display:flex;gap:18px;padding:12px 20px;border-top:1px solid var(--line);font-size:11px;color:var(--mid)}
+.cal-legend span{display:inline-flex;align-items:center;gap:6px}
+
+/* ── FOOTER ── */
+footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-top:var(--sp)}
+.footer-grid{display:grid;grid-template-columns:1fr;gap:32px;max-width:1200px;margin:0 auto;padding-bottom:40px;border-bottom:1px solid rgba(245,241,235,.12)}
+@media(min-width:700px){.footer-grid{grid-template-columns:1.3fr 1fr 1fr;gap:48px;padding-bottom:52px}}
+.footer-brand{font-family:'Fraunces',serif;font-style:italic;font-size:28px;margin-bottom:12px}
+.footer-brand-desc{font-size:13.5px;color:rgba(245,241,235,.55);max-width:30ch;line-height:1.65;margin-bottom:18px}
+.footer-ig{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:rgba(245,241,235,.6);text-decoration:none}
+.footer-lbl{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:rgba(245,241,235,.4);margin-bottom:14px}
+.footer-col p,.footer-col a{display:block;font-size:14px;line-height:1.9;color:rgba(245,241,235,.8);text-decoration:none}
+.footer-col a:hover{color:var(--rust)}
+.footer-map{display:inline-flex;align-items:center;gap:7px;margin-top:4px;font-size:13px;color:var(--rust)!important;text-decoration:none}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:22px;display:flex;justify-content:space-between;align-items:center;font-family:'Space Mono',monospace;font-size:11.5px;color:rgba(245,241,235,.3)}
+.footer-admin{background:none;border:none;color:rgba(245,241,235,.15);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.08em;min-height:44px;padding:0 8px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Leir<em>.</em></div>
+  <div class="nav-right">
+    <span class="status" id="statusBadge"><span class="dot"></span><span id="statusText">—</span></span>
+    <div class="nav-links">
+      <a href="#about">Om oss</a>
+      <a href="#menu">Meny</a>
+      <a href="#events">Evenemang</a>
+      <a href="#footer">Kontakt</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div style="position:relative">
+    <div class="hero-eyebrow"><span class="tick"></span><span class="eyebrow">Lunch · Ullevigatan, Göteborg</span></div>
+    <h1 class="hero-h1">Mat lagad<br><em>varje vardag.</em></h1>
+    <div class="hero-foot">
+      <a href="#menu" class="btn-cta">Se veckans meny ↓</a>
+      <div class="hero-meta">Mån–Fre <b>11.00–14.00</b><br>Ullevigatan 17–19</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- OM OSS -->
+<section class="section" id="about">
+  <span class="eyebrow sec-eyebrow">Om Leir</span>
+  <h2 class="sh">Mat som smakar<br><em style="font-style:italic;color:var(--rust)">något.</em></h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>Leir startade med en enkel idé: att laga riktigt bra lunch varje vardag, utan krångel. Vi lagar allt från grunden — fyra alternativ per dag, alltid ett vegetariskt, ett fisk, ett kött och en sallad.</p>
+      <p>Vi sitter på Ullevigatan mitt i Göteborg och har hållit på sedan 2018. Välkommen in.</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-num">2018</div><div class="stat-lbl">Grundat</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Dagar i veckan</div></div>
+      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Alternativ varje dag</div></div>
+      <div class="stat"><div class="stat-num">139</div><div class="stat-lbl">Kronor per rätt</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- MENY -->
+<section class="section" id="menu">
+  <div class="menu-top">
+    <div>
+      <div class="eyebrow sec-eyebrow" id="weekLabel">Vecka —</div>
+      <h2 class="sh">Veckans meny</h2>
+    </div>
+    <p>Fyra alternativ varje dag. Alltid 139 kr.</p>
+  </div>
+
+  <div class="day-tabs" role="tablist">
+    <button class="day-tab" role="tab" data-day="mon" aria-selected="true">MÅN</button>
+    <button class="day-tab" role="tab" data-day="tue" aria-selected="false">TIS</button>
+    <button class="day-tab" role="tab" data-day="wed" aria-selected="false">ONS</button>
+    <button class="day-tab" role="tab" data-day="thu" aria-selected="false">TOR</button>
+    <button class="day-tab" role="tab" data-day="fri" aria-selected="false">FRE</button>
+  </div>
+
+  <div class="allergen">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Allergi? <a href="tel:0313031056">Ring oss</a> eller fråga i disken.
+  </div>
+
+  <!-- MÅN -->
+  <div class="day-panel active" data-panel="mon">
+    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">MÅN</span></div><div><div class="panel-sub">Veckan börjar tryggt</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
+    <div class="dish-grid">
+      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Friterad lasagne</span><span class="dish-price">139:-</span></div><p class="dish-desc">Tomatsås, rucolasallad och riven grana padano.</p></div>
+      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Smörstekt dagens fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Remouladsås, dillkokt potatis, pepparrot och gurksallad.</p></div>
+      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">BBQ-glaserad gårdsgris</span><span class="dish-price">139:-</span></div><p class="dish-desc">Friterad mac 'n cheese, chipotle skysås och spicy slaw.</p></div>
+      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
+    </div>
+  </div>
+
+  <!-- TIS -->
+  <div class="day-panel" data-panel="tue">
+    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">TIS</span></div><div><div class="panel-sub">Smaker från öst &amp; väst</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
+    <div class="dish-grid">
+      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Tikka masala</span><span class="dish-price">139:-</span></div><p class="dish-desc">Grönsaker och bönor med grillad halloumi, jasminris och koriander.</p></div>
+      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Laxfärserad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Smörad skaldjursbuljong, saffransaioli och potatispuré.</p></div>
+      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Schnitzel</span><span class="dish-price">139:-</span></div><p class="dish-desc">Vispat västerbottensmör, rödvinsås, rostad potatis och gröna ärtor.</p></div>
+      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
+    </div>
+  </div>
+
+  <!-- ONS -->
+  <div class="day-panel" data-panel="wed">
+    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">ONS</span></div><div><div class="panel-sub">Halvvägs, med kraft</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
+    <div class="dish-grid">
+      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Okonomiyaki</span><span class="dish-price">139:-</span></div><p class="dish-desc">Sesamkål, edamamebönor, jasminris, chilimajonäs och furikake.</p></div>
+      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Fisk- &amp; skaldjursgryta</span><span class="dish-price">139:-</span></div><p class="dish-desc">Bohusländsk gryta med rotfrukter, aioli och vitlöksbröd.</p></div>
+      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Kalv wallenbergare</span><span class="dish-price">139:-</span></div><p class="dish-desc">Gräddsås, potatispuré, pressgurka och rårörda lingon.</p></div>
+      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
+    </div>
+  </div>
+
+  <!-- TOR -->
+  <div class="day-panel" data-panel="thu">
+    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">TOR</span></div><div><div class="panel-sub">Rotfrukter i centrum</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
+    <div class="dish-grid">
+      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Rotfruktsbiff</span><span class="dish-price">139:-</span></div><p class="dish-desc">Ört- &amp; västerbottenostsås, puré på palsternacka och broccoli.</p></div>
+      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Vitvinspocherad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Puré på palsternacka, citronsås och broccoli.</p></div>
+      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Kycklingfärsbiff</span><span class="dish-price">139:-</span></div><p class="dish-desc">Currysås, jasminris, mangochutney, jordnötter och pak choy.</p></div>
+      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
+    </div>
+  </div>
+
+  <!-- FRE -->
+  <div class="day-panel" data-panel="fri">
+    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">FRE</span></div><div><div class="panel-sub">Veckan avslutas på topp</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
+    <div class="dish-grid">
+      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Sesampanerad rotselleri</span><span class="dish-price">139:-</span></div><p class="dish-desc">Rosmarin- &amp; hallonsky-rostad svamp och potatispuré.</p></div>
+      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Dillrimmad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Sandefjordsås, bakade tomater och potatispuré.</p></div>
+      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Grillad gårdsgris</span><span class="dish-price">139:-</span></div><p class="dish-desc">Bearnaisesås, tomatsallad, pommes frites och rödvinsås.</p></div>
+      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- DRYCK -->
+<section class="section">
+  <h2 class="sh" style="font-size:clamp(22px,3.5vw,30px)">Dryck</h2>
+  <div class="drink-list">
+    <div class="drink-row"><span>Mineralvatten</span><span class="drink-price">25:-</span></div>
+    <div class="drink-row"><span>Läsk</span><span class="drink-price">25:-</span></div>
+  </div>
+</section>
+
+<!-- EVENEMANG -->
+<section class="section" id="events">
+  <div class="events-top">
+    <div>
+      <div class="eyebrow sec-eyebrow">Utöver lunchen</div>
+      <h2 class="sh">Evenemang</h2>
+    </div>
+    <div class="events-right">
+      <p>Enstaka kvällar håller vi öppet för temakvällar eller hyr ut lokalen privat.</p>
+      <button class="cal-btn" id="calBtn">
+        Visa kalender
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="event-cards">
+    <div class="event-card">
+      <span class="ev-type open"><span class="dot"></span>Öppet för alla</span>
+      <div class="ev-date-row"><span class="ev-date">3 jul</span><span class="ev-time">18:00–22:00</span></div>
+      <span class="ev-name">Sommarsupé på altanen</span>
+      <p class="ev-desc">Tre-rätters meny med fokus på västkustens råvaror. Boka bord i förväg.</p>
+    </div>
+    <div class="event-card">
+      <span class="ev-type private"><span class="dot"></span>Privat bokning</span>
+      <div class="ev-date-row"><span class="ev-date">9 jul</span><span class="ev-time">17:00–23:00</span></div>
+      <span class="ev-name">Privat bokning</span>
+      <p class="ev-desc">Lokalen är bokad för ett privat firande denna kväll.</p>
+    </div>
+    <div class="event-card">
+      <span class="ev-type open"><span class="dot"></span>Öppet för alla</span>
+      <div class="ev-date-row"><span class="ev-date">16 jul</span><span class="ev-time">18:30–21:30</span></div>
+      <span class="ev-name">Vinprovning: Rhônedalen</span>
+      <p class="ev-desc">Fem viner, lätta tilltugg och kort guidning. Begränsat antal platser.</p>
+    </div>
+  </div>
+
+  <div class="cal-wrap" id="calWrap">
+    <div class="calendar">
+      <div class="cal-nav">
+        <button class="cal-nav-btn" id="prevM">‹</button>
+        <span class="cal-month" id="calLabel"></span>
+        <button class="cal-nav-btn" id="nextM">›</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span><span class="ev-dot open"></span>Öppet för alla</span>
+        <span><span class="ev-dot private"></span>Privat bokning</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">Leir</div>
+      <p class="footer-brand-desc">Lunchrestaurang mitt i Göteborg. Ny meny varje vardag, alltid lagad från grunden.</p>
+      <a href="https://instagram.com/leirmatmoten" target="_blank" rel="noopener" class="footer-ig">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+        @leirmatmoten
+      </a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-lbl">Hitta hit</div>
+      <p>Ullevigatan 17–19</p><p>411 40 Göteborg</p>
+      <a href="https://maps.google.com/?q=Ullevigatan+17-19+Göteborg" target="_blank" rel="noopener" class="footer-map">Visa karta →</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-lbl">Kontakt</div>
+      <a href="mailto:info@leir.nu">info@leir.nu</a>
+      <a href="tel:0313031056">031-30 310 56</a>
+      <p style="margin-top:12px;font-size:13px;color:rgba(245,241,235,.5);line-height:1.6">Mån–Fre 11.00–14.00<br>Enstaka kvällar — se evenemang</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Leir</span>
+    <button class="footer-admin" onclick="window.location='leir-admin.html'">ADMIN</button>
+  </div>
+</footer>
+
+<script>
+// ── WEEK ─────────────────────────────────────────────────────────
+function isoWeek(d){const dc=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const dn=dc.getUTCDay()||7;dc.setUTCDate(dc.getUTCDate()+4-dn);return Math.ceil((((dc-new Date(Date.UTC(dc.getUTCFullYear(),0,1)))/86400000)+1)/7);}
+document.getElementById('weekLabel').textContent='Vecka '+isoWeek(new Date());
+
+// ── STATUS ────────────────────────────────────────────────────────
+const EVENTS=[
+  {date:'2026-07-03',start:'18:00',end:'22:00',type:'open',name:'Sommarsupé på altanen'},
+  {date:'2026-07-09',start:'17:00',end:'23:00',type:'private',name:'Privat bokning'},
+  {date:'2026-07-16',start:'18:30',end:'21:30',type:'open',name:'Vinprovning: Rhônedalen'},
+];
+function updateStatus(){
+  const now=new Date(),d=now.getDay(),m=now.getHours()*60+now.getMinutes();
+  const wd=d>=1&&d<=5,lunch=wd&&m>=660&&m<840;
+  const ds=now.toISOString().slice(0,10);
+  const evt=EVENTS.find(e=>e.date===ds&&e.type==='open');
+  let eS=0,eE=0,eO=false;
+  if(evt){eS=+evt.start.split(':')[0]*60+ +evt.start.split(':')[1];eE=+evt.end.split(':')[0]*60+ +evt.end.split(':')[1];eO=m>=eS&&m<eE;}
+  const b=document.getElementById('statusBadge'),t=document.getElementById('statusText');
+  if(lunch){b.className='status open';t.textContent=840-m<=30?`Stänger om ${840-m} min`:'Öppet nu — lunch';}
+  else if(eO){b.className='status open';t.textContent=eE-m<=30?`Stänger om ${eE-m} min`:`Öppet nu — ${evt.name}`;}
+  else if(evt&&m<eS){b.className='status closed';t.textContent=`Öppnar ${evt.start} ikväll`;}
+  else{b.className='status closed';t.textContent=wd&&m<660?'Öppnar 11.00':'Stängt';}
+}
+updateStatus();setInterval(updateStatus,30000);
+
+// ── DAY TABS ──────────────────────────────────────────────────────
+const tabs=Array.from(document.querySelectorAll('.day-tab'));
+const panels=document.querySelectorAll('.day-panel');
+function selectTab(tab,focus){
+  tabs.forEach(t=>{t.setAttribute('aria-selected','false');t.tabIndex=-1;});
+  tab.setAttribute('aria-selected','true');tab.tabIndex=0;
+  if(focus)tab.focus();
+  panels.forEach(p=>p.classList.toggle('active',p.dataset.panel===tab.dataset.day));
+}
+tabs.forEach((tab,i)=>{
+  tab.tabIndex=tab.getAttribute('aria-selected')==='true'?0:-1;
+  tab.addEventListener('click',()=>selectTab(tab,false));
+  tab.addEventListener('keydown',e=>{
+    let t=null;
+    if(e.key==='ArrowRight')t=tabs[(i+1)%tabs.length];
+    else if(e.key==='ArrowLeft')t=tabs[(i-1+tabs.length)%tabs.length];
+    if(t){e.preventDefault();selectTab(t,true);}
+  });
+});
+const tk={1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'}[new Date().getDay()];
+if(tk){const t=tabs.find(x=>x.dataset.day===tk);if(t)selectTab(t,false);}
+
+// ── CALENDAR ──────────────────────────────────────────────────────
+let calDate=new Date();calDate.setDate(1);
+function renderCal(){
+  const y=calDate.getFullYear(),mo=calDate.getMonth();
+  const lbl=calDate.toLocaleDateString('sv-SE',{month:'long',year:'numeric'});
+  document.getElementById('calLabel').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+  const ts=new Date().toISOString().slice(0,10);
+  const g=document.getElementById('calGrid');
+  let h=['Mån','Tis','Ons','Tor','Fre','Lör','Sön'].map(d=>`<div class="cal-wday">${d}</div>`).join('');
+  const off=(new Date(y,mo,1).getDay()||7)-1;
+  for(let i=0;i<off;i++)h+=`<div class="cal-day empty"></div>`;
+  const dim=new Date(y,mo+1,0).getDate();
+  for(let d=1;d<=dim;d++){
+    const ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const evs=EVENTS.filter(e=>e.date===ds);
+    const today=ds===ts;
+    const num=today?`<span class="cal-num" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:11px">${d}</span>`:`<span class="cal-num">${d}</span>`;
+    const dots=evs.length?`<div class="ev-dot-row">${evs.map(e=>`<span class="ev-dot ${e.type}"></span>`).join('')}</div>`:'';
+    const lbl=evs[0]?`<span class="cal-ev-lbl">${evs[0].name}</span>`:'';
+    h+=`<div class="cal-day${today?' today':''}">${num}${dots}${lbl}</div>`;
+  }
+  g.innerHTML=h;
+}
+renderCal();
+document.getElementById('prevM').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCal();});
+document.getElementById('nextM').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()+1);renderCal();});
+const calBtn=document.getElementById('calBtn'),calWrap=document.getElementById('calWrap');
+calBtn.addEventListener('click',()=>{
+  const open=calWrap.classList.toggle('open');
+  calBtn.classList.toggle('open',open);
+  calBtn.firstChild.nodeValue=open?'Dölj kalender ':'Visa kalender ';
+});
+</script>
+</body>
+</html>
