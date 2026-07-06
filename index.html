@@ -347,11 +347,11 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 <section class="hero">
   <div class="hero-bg"></div>
   <div style="position:relative">
-    <div class="hero-eyebrow"><span class="tick"></span><span class="eyebrow">Lunch · Ullevigatan, Göteborg</span></div>
-    <h1 class="hero-h1">Mat lagad<br><em>varje vardag.</em></h1>
+    <div class="hero-eyebrow"><span class="tick"></span><span class="eyebrow" id="heroEyebrow">Lunch · Ullevigatan, Göteborg</span></div>
+    <h1 class="hero-h1" id="heroTitle">Mat lagad<br><em>varje vardag.</em></h1>
     <div class="hero-foot">
-      <a href="#menu" class="btn-cta">Se veckans meny ↓</a>
-      <div class="hero-meta">Mån–Fre <b>11.00–14.00</b><br>Ullevigatan 17–19</div>
+      <a href="#menu" class="btn-cta" id="heroBtn">Se veckans meny ↓</a>
+      <div class="hero-meta" id="heroMeta">Mån–Fre <b>11.00–14.00</b><br>Ullevigatan 17–19</div>
     </div>
   </div>
 </section>
@@ -388,7 +388,7 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 
   <div class="allergen">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-    Allergi? <a href="tel:0313031056">Ring oss</a> eller fråga i disken.
+    <span id="allergenText">Allergi? <a href="tel:0313031056">Ring oss</a> eller fråga i disken.</span>
   </div>
 
   <div id="menuPanels"></div>
@@ -439,22 +439,22 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
   <div class="footer-grid">
     <div>
       <div class="footer-brand">Leir</div>
-      <p class="footer-brand-desc">Lunchrestaurang mitt i Göteborg. Ny meny varje vardag, alltid lagad från grunden.</p>
-      <a href="https://instagram.com/leirmatmoten" target="_blank" rel="noopener" class="footer-ig">
+      <p class="footer-brand-desc" id="footerDesc">Lunchrestaurang mitt i Göteborg. Ny meny varje vardag, alltid lagad från grunden.</p>
+      <a href="https://instagram.com/leirmatmoten" target="_blank" rel="noopener" class="footer-ig" id="footerIgLink">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-        @leirmatmoten
+        <span id="footerIgHandle">@leirmatmoten</span>
       </a>
     </div>
     <div class="footer-col">
       <div class="footer-lbl">Hitta hit</div>
-      <p>Ullevigatan 17–19</p><p>411 40 Göteborg</p>
-      <a href="https://maps.google.com/?q=Ullevigatan+17-19+Göteborg" target="_blank" rel="noopener" class="footer-map">Visa karta →</a>
+      <p id="footerAddr1">Ullevigatan 17–19</p><p id="footerAddr2">411 40 Göteborg</p>
+      <a href="https://maps.google.com/?q=Ullevigatan+17-19+Göteborg" target="_blank" rel="noopener" class="footer-map" id="footerMapLink">Visa karta →</a>
     </div>
     <div class="footer-col">
       <div class="footer-lbl">Kontakt</div>
-      <a href="mailto:info@leir.nu">info@leir.nu</a>
-      <a href="tel:0313031056">031-30 310 56</a>
-      <p style="margin-top:12px;font-size:13px;color:rgba(245,241,235,.5);line-height:1.6">Mån–Fre 11.00–14.00<br>Enstaka kvällar — se evenemang</p>
+      <a href="mailto:info@leir.nu" id="footerEmail">info@leir.nu</a>
+      <a href="tel:0313031056" id="footerPhone">031-30 310 56</a>
+      <p style="margin-top:12px;font-size:13px;color:rgba(245,241,235,.5);line-height:1.6" id="footerHours">Mån–Fre 11.00–14.00<br>Enstaka kvällar — se evenemang</p>
     </div>
   </div>
   <div class="footer-bottom">
@@ -465,6 +465,7 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 
 <script>
 LeirData.init();
+LeirData.applyTheme();
 if (window.__leirDataMissing) {
   const banner = document.getElementById('dataMissingBanner');
   if (banner) banner.style.display = 'block';
@@ -479,6 +480,31 @@ const DAY_LABELS={mon:'MÅN',tue:'TIS',wed:'ONS',thu:'TOR',fri:'FRE'};
 // ── WEEK ─────────────────────────────────────────────────────────
 function isoWeek(d){const dc=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const dn=dc.getUTCDay()||7;dc.setUTCDate(dc.getUTCDate()+4-dn);return Math.ceil((((dc-new Date(Date.UTC(dc.getUTCFullYear(),0,1)))/86400000)+1)/7);}
 document.getElementById('weekLabel').textContent='Vecka '+isoWeek(new Date());
+
+// ── SETTINGS (hero, kontakt, footer) ───────────────────────────────
+function renderSettings(){
+  const s=LeirData.getSettings();
+
+  document.getElementById('heroEyebrow').textContent=s.heroEyebrow;
+  document.getElementById('heroTitle').innerHTML=`${esc(s.heroTitleLine1)}<br><em>${esc(s.heroTitleLine2)}</em>`;
+  document.getElementById('heroBtn').innerHTML=`${esc(s.heroButtonText)} ↓`;
+  document.getElementById('heroMeta').innerHTML=`${esc(s.openDays)} <b>${esc(s.openTime)}</b><br>${esc(s.address1)}`;
+
+  document.getElementById('allergenText').innerHTML=`${esc(s.allergenText.replace(/Ring oss\.?/,'').trim())} <a href="tel:${esc(s.phoneHref)}">Ring oss</a>`;
+
+  document.getElementById('footerDesc').textContent=s.footerDesc;
+  document.getElementById('footerIgLink').href=`https://instagram.com/${s.instagram}`;
+  document.getElementById('footerIgHandle').textContent=`@${s.instagram}`;
+  document.getElementById('footerAddr1').textContent=s.address1;
+  document.getElementById('footerAddr2').textContent=s.address2;
+  document.getElementById('footerMapLink').href=s.mapUrl;
+  document.getElementById('footerEmail').textContent=s.email;
+  document.getElementById('footerEmail').href=`mailto:${s.email}`;
+  document.getElementById('footerPhone').textContent=s.phone;
+  document.getElementById('footerPhone').href=`tel:${s.phoneHref}`;
+  document.getElementById('footerHours').innerHTML=`${esc(s.openDays)} ${esc(s.openTime)}<br>${esc(s.eveningNote)}`;
+}
+renderSettings();
 
 // ── ABOUT ─────────────────────────────────────────────────────────
 function renderAbout(){
@@ -593,16 +619,16 @@ setInterval(()=>{updateStatus();},30000);
 // Re-render everything if admin changes localStorage in another tab
 window.addEventListener('storage',(e)=>{
   if(e.key && e.key.indexOf('leir:')===0){
-    renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+    LeirData.applyTheme();renderSettings();renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
   }
 });
 // Also re-check when the tab regains focus (covers same-tab admin->public navigation via back button, and multi-tab demos)
 window.addEventListener('focus',()=>{
-  renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+  LeirData.applyTheme();renderSettings();renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
 });
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){
-    renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+    LeirData.applyTheme();renderSettings();renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
   }
 });
 

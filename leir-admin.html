@@ -301,6 +301,19 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
 .admin-username{font-family:'Space Mono',monospace;font-size:11px;color:var(--mid);margin-top:2px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .add-admin-box{border:1px solid var(--line);padding:22px 18px;background:var(--bg-off)}
 
+/* ── SETTINGS TAB ── */
+.settings-block{border:1px solid var(--line);padding:20px 18px;margin-bottom:20px;background:var(--bg)}
+.settings-block-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut);margin-bottom:16px}
+.stats-edit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(max-width:520px){.stats-edit-grid{grid-template-columns:1fr}}
+.stat-edit-item{border:1px solid var(--line);padding:12px;display:flex;gap:8px}
+.stat-edit-item input:first-child{max-width:80px;flex-shrink:0}
+.color-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.color-item{display:flex;flex-direction:column;gap:8px}
+.color-swatch-row{display:flex;align-items:center;gap:10px}
+.color-swatch-row input[type=color]{width:44px;height:44px;padding:0;border:1px solid var(--line);cursor:pointer;background:none;min-height:44px}
+.color-swatch-row input[type=text]{flex-grow:1;font-family:'Space Mono',monospace;font-size:12px;text-transform:uppercase}
+
 /* ── MODAL ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(45,41,38,.55);z-index:100;display:flex;align-items:flex-end;justify-content:center;padding:0}
 @media(min-width:640px){.modal-overlay{align-items:center;padding:24px}}
@@ -354,6 +367,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
   <button class="desktop-tab active" data-tab="menu">Meny</button>
   <button class="desktop-tab" data-tab="drinks">Dryck</button>
   <button class="desktop-tab" data-tab="events">Evenemang</button>
+  <button class="desktop-tab" data-tab="settings">Inställningar</button>
   <button class="desktop-tab" data-tab="admins">Konton</button>
 </div>
 
@@ -393,6 +407,69 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
     <div id="eventTab"></div>
   </div>
 
+  <!-- INSTÄLLNINGAR -->
+  <div id="tab-settings" style="display:none">
+    <div class="sec-header">
+      <div><h2 class="sec-title">Inställningar</h2><p class="sec-desc">Texter, kontaktuppgifter och färgtema för hela sajten. Sparas när du lämnar ett fält.</p></div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Hero — förstasidan</div>
+      <div class="grid-2" style="margin-bottom:12px">
+        <div><label class="field-label">Liten rubrik ovanför titeln</label><input type="text" id="setHeroEyebrow" onblur="saveSetting('heroEyebrow',this.value)"></div>
+        <div><label class="field-label">Knapptext</label><input type="text" id="setHeroBtn" onblur="saveSetting('heroButtonText',this.value)"></div>
+        <div><label class="field-label">Titel rad 1</label><input type="text" id="setHeroLine1" onblur="saveSetting('heroTitleLine1',this.value)"></div>
+        <div><label class="field-label">Titel rad 2 (kursiv, orange)</label><input type="text" id="setHeroLine2" onblur="saveSetting('heroTitleLine2',this.value)"></div>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Öppettider</div>
+      <div class="grid-2">
+        <div><label class="field-label">Veckodagar</label><input type="text" id="setOpenDays" onblur="saveSetting('openDays',this.value)" placeholder="Mån–Fre"></div>
+        <div><label class="field-label">Tider</label><input type="text" id="setOpenTime" onblur="saveSetting('openTime',this.value)" placeholder="11.00–14.00"></div>
+      </div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Kontakt &amp; adress</div>
+      <div class="grid-2" style="margin-bottom:12px">
+        <div><label class="field-label">Adressrad 1</label><input type="text" id="setAddr1" onblur="saveSetting('address1',this.value)"></div>
+        <div><label class="field-label">Adressrad 2</label><input type="text" id="setAddr2" onblur="saveSetting('address2',this.value)"></div>
+        <div><label class="field-label">Telefon (visas)</label><input type="text" id="setPhone" onblur="saveSetting('phone',this.value)" placeholder="031-30 310 56"></div>
+        <div><label class="field-label">Telefon (för ring-länk, endast siffror)</label><input type="text" id="setPhoneHref" onblur="saveSetting('phoneHref',this.value)" placeholder="0313031056"></div>
+        <div><label class="field-label">E-post</label><input type="text" id="setEmail" onblur="saveSetting('email',this.value)"></div>
+        <div><label class="field-label">Instagram (utan @)</label><input type="text" id="setInstagram" onblur="saveSetting('instagram',this.value)"></div>
+      </div>
+      <div><label class="field-label">Google Maps-länk</label><input type="text" id="setMapUrl" onblur="saveSetting('mapUrl',this.value)"></div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Övriga texter</div>
+      <div style="margin-bottom:12px"><label class="field-label">Allergentext</label><input type="text" id="setAllergen" onblur="saveSetting('allergenText',this.value)"></div>
+      <div style="margin-bottom:12px"><label class="field-label">Footer-beskrivning</label><textarea id="setFooterDesc" onblur="saveSetting('footerDesc',this.value)"></textarea></div>
+      <div><label class="field-label">Kvällsnotis i footer</label><input type="text" id="setEveningNote" onblur="saveSetting('eveningNote',this.value)" placeholder="Enstaka kvällar — se evenemang"></div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Om oss</div>
+      <div style="margin-bottom:12px"><label class="field-label">Rubrik</label><input type="text" id="setAboutTitle" onblur="saveAbout('title',this.value)"></div>
+      <div style="margin-bottom:12px"><label class="field-label">Text, stycke 1</label><textarea id="setAboutP1" onblur="saveAbout('p1',this.value)"></textarea></div>
+      <div style="margin-bottom:16px"><label class="field-label">Text, stycke 2</label><textarea id="setAboutP2" onblur="saveAbout('p2',this.value)"></textarea></div>
+      <label class="field-label">Statistikrutor</label>
+      <div class="stats-edit-grid" id="statsEditGrid"></div>
+    </div>
+
+    <div class="settings-block">
+      <div class="settings-block-title">Färgtema</div>
+      <p class="sec-desc" style="margin-bottom:16px">Ändringar syns direkt på den publika sidan.</p>
+      <div class="color-grid" id="colorGrid"></div>
+      <div style="margin-top:14px">
+        <button class="btn btn-secondary btn-sm" onclick="resetTheme()">Återställ standardfärger</button>
+      </div>
+    </div>
+  </div>
+
   <!-- KONTON -->
   <div id="tab-admins" style="display:none">
     <div class="sec-header">
@@ -427,6 +504,10 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
     <button class="mobile-nav-btn" data-tab="events">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Event
+    </button>
+    <button class="mobile-nav-btn" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Inst.
     </button>
     <button class="mobile-nav-btn" data-tab="admins">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
@@ -525,6 +606,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
 
 <script>
 LeirData.init();
+LeirData.applyTheme();
 if (window.__leirDataMissing) {
   const banner = document.getElementById('dataMissingBanner');
   if (banner) banner.style.display = 'block';
@@ -537,6 +619,9 @@ let events=LeirData.getEvents();
 let dishLibrary=LeirData.getDishLibrary();
 let eventTemplates=LeirData.getEventTemplates();
 let admins=LeirData.getAdmins();
+let settings=LeirData.getSettings();
+let about=LeirData.getAbout();
+let theme=LeirData.getTheme();
 
 const ME='anna.svensson';
 
@@ -558,7 +643,7 @@ function switchTab(tabName){
   document.querySelectorAll('.desktop-tab,.mobile-nav-btn').forEach(b=>{
     b.classList.toggle('active',b.dataset.tab===tabName);
   });
-  ['menu','drinks','events','admins'].forEach(id=>{
+  ['menu','drinks','events','settings','admins'].forEach(id=>{
     document.getElementById('tab-'+id).style.display=id===tabName?'block':'none';
   });
 }
@@ -924,7 +1009,94 @@ function confirmRemoveAdmin(username){
 }
 renderAdmins();
 
-// ── CHANGE PW ─────────────────────────────────────────────────────
+// ── SETTINGS ──────────────────────────────────────────────────────
+function persistSettings(){LeirData.setSettings(settings);}
+function persistAbout(){LeirData.setAbout(about);}
+function persistTheme(){LeirData.setTheme(theme);LeirData.applyTheme();}
+
+function fillSettingsForm(){
+  document.getElementById('setHeroEyebrow').value=settings.heroEyebrow;
+  document.getElementById('setHeroBtn').value=settings.heroButtonText;
+  document.getElementById('setHeroLine1').value=settings.heroTitleLine1;
+  document.getElementById('setHeroLine2').value=settings.heroTitleLine2;
+  document.getElementById('setOpenDays').value=settings.openDays;
+  document.getElementById('setOpenTime').value=settings.openTime;
+  document.getElementById('setAddr1').value=settings.address1;
+  document.getElementById('setAddr2').value=settings.address2;
+  document.getElementById('setPhone').value=settings.phone;
+  document.getElementById('setPhoneHref').value=settings.phoneHref;
+  document.getElementById('setEmail').value=settings.email;
+  document.getElementById('setInstagram').value=settings.instagram;
+  document.getElementById('setMapUrl').value=settings.mapUrl;
+  document.getElementById('setAllergen').value=settings.allergenText;
+  document.getElementById('setFooterDesc').value=settings.footerDesc;
+  document.getElementById('setEveningNote').value=settings.eveningNote;
+
+  document.getElementById('setAboutTitle').value=about.title;
+  document.getElementById('setAboutP1').value=about.p1;
+  document.getElementById('setAboutP2').value=about.p2;
+
+  renderStatsEdit();
+  renderColorGrid();
+}
+
+function saveSetting(key,val){
+  settings[key]=val;
+  persistSettings();
+  flash();
+}
+function saveAbout(key,val){
+  about[key]=val;
+  persistAbout();
+  flash();
+}
+
+// Stats editor (4 boxes: number + label)
+function renderStatsEdit(){
+  document.getElementById('statsEditGrid').innerHTML=about.stats.map((s,i)=>`
+    <div class="stat-edit-item">
+      <input type="text" value="${esc(s.num)}" onblur="saveStat(${i},'num',this.value)" placeholder="2018">
+      <input type="text" value="${esc(s.label)}" onblur="saveStat(${i},'label',this.value)" placeholder="Grundat">
+    </div>
+  `).join('');
+}
+function saveStat(idx,field,val){
+  about.stats[idx][field]=val;
+  persistAbout();
+  flash();
+}
+
+// Color theme editor
+const THEME_LABELS={bg:'Bakgrund',ink:'Text (mörk)',rust:'Accent (terrakotta)',walnut:'Accent (valnöt)',sage:'Accent (salvia)'};
+function renderColorGrid(){
+  document.getElementById('colorGrid').innerHTML=Object.keys(THEME_LABELS).map(key=>`
+    <div class="color-item">
+      <label class="field-label">${THEME_LABELS[key]}</label>
+      <div class="color-swatch-row">
+        <input type="color" value="${theme[key]}" oninput="saveColor('${key}',this.value);document.getElementById('colorText_${key}').value=this.value" id="colorPicker_${key}">
+        <input type="text" value="${esc(theme[key])}" id="colorText_${key}" onblur="saveColor('${key}',this.value);document.getElementById('colorPicker_${key}').value=this.value">
+      </div>
+    </div>
+  `).join('');
+}
+function saveColor(key,val){
+  if(!/^#[0-9A-Fa-f]{6}$/.test(val))return; // ignore invalid hex while typing
+  theme[key]=val;
+  persistTheme();
+  flash();
+}
+function resetTheme(){
+  showConfirm('Återställ till standardfärger?',()=>{
+    theme={...LeirData.DEFAULTS.theme};
+    persistTheme();
+    renderColorGrid();
+    flash();
+  });
+}
+
+fillSettingsForm();
+
+
 function showChangePw(){document.getElementById('changePwModal').style.display='flex';}
 function closeChangePw(){
   document.getElementById('changePwModal').style.display='none';
