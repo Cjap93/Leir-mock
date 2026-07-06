@@ -14,7 +14,149 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Restaurant","name":"Leir","telephone":"+46313031056","address":{"@type":"PostalAddress","streetAddress":"Ullevigatan 17-19","postalCode":"411 40","addressLocality":"Göteborg","addressCountry":"SE"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"11:00","closes":"14:00"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="data.js"></script>
+<script src="data.js" onerror="window.__leirDataMissing=true;console.error('data.js kunde inte laddas — kontrollera att filen ligger i samma mapp som index.html på servern.');"></script>
+<script>
+// Fallback: om data.js av någon anledning inte laddades (fel sökväg, 404, etc),
+// skapar vi en minimal LeirData här inline så sidan aldrig blir helt tom.
+if (typeof LeirData === 'undefined') {
+  console.warn('LeirData saknas — använder inbyggd reservdata. Kontrollera att data.js finns i samma mapp och laddas korrekt (öppna nätverksfliken i DevTools för att se om data.js gav 404).');
+  window.__leirDataMissing = true;
+  (function () {
+    const STORAGE_PREFIX = "leir:";
+    const DEFAULTS = {
+      menu: {
+        mon: { subtitle: "Veckan börjar tryggt", dishes: [
+          { type: "veg",   name: "Friterad lasagne",          price: "139:-", desc: "Tomatsås, rucolasallad och riven grana padano." },
+          { type: "fish",  name: "Smörstekt dagens fångst",   price: "139:-", desc: "Remouladsås, dillkokt potatis, pepparrot och dill- & gurksallad." },
+          { type: "meat",  name: "BBQ-glaserad gårdsgris",    price: "139:-", desc: "Friterad mac 'n cheese, chipotle skysås och spicy slaw." },
+          { type: "salad", name: "Caesarsallad",               price: "139:-", desc: "Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano." },
+        ]},
+        tue: { subtitle: "Smaker från öst & väst", dishes: [
+          { type: "veg",   name: "Tikka masala",              price: "139:-", desc: "Grönsaker och bönor med grillad halloumi, jasminris och koriander." },
+          { type: "fish",  name: "Laxfärserad dagens fångst", price: "139:-", desc: "Smörad skaldjursbuljong, saffransaioli och potatispuré." },
+          { type: "meat",  name: "Schnitzel",                 price: "139:-", desc: "Vispat västerbottensmör, rödvinsås, rostad potatis och gröna ärtor." },
+          { type: "salad", name: "Caesarsallad",               price: "139:-", desc: "Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano." },
+        ]},
+        wed: { subtitle: "Halvvägs, med kraftiga smaker", dishes: [
+          { type: "veg",   name: "Okonomiyaki",               price: "139:-", desc: "Sesamkål, edamamebönor, jasminris, chilimajonäs och furikake." },
+          { type: "fish",  name: "Fisk- & skaldjursgryta",    price: "139:-", desc: "Bohusländsk gryta med rotfrukter, aioli och vitlöksbröd." },
+          { type: "meat",  name: "Kalv wallenbergare",         price: "139:-", desc: "Gräddsås, potatispuré, pressgurka och rårörda lingon." },
+          { type: "salad", name: "Caesarsallad",               price: "139:-", desc: "Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano." },
+        ]},
+        thu: { subtitle: "Rotfrukter i centrum", dishes: [
+          { type: "veg",   name: "Rotfruktsbiff",             price: "139:-", desc: "Ört- & västerbottenostsås, puré på palsternacka och broccoli." },
+          { type: "fish",  name: "Vitvinspocherad fångst",    price: "139:-", desc: "Puré på palsternacka, citronsås och broccoli." },
+          { type: "meat",  name: "Kycklingfärsbiff",          price: "139:-", desc: "Currysås, jasminris, mangochutney, jordnötter och pak choy." },
+          { type: "salad", name: "Caesarsallad",               price: "139:-", desc: "Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano." },
+        ]},
+        fri: { subtitle: "Veckan avslutas på topp", dishes: [
+          { type: "veg",   name: "Sesampanerad rotselleri",   price: "139:-", desc: "Rosmarin- & hallonsky-rostad svamp och potatispuré." },
+          { type: "fish",  name: "Dillrimmad dagens fångst",  price: "139:-", desc: "Sandefjordsås, bakade tomater och potatispuré." },
+          { type: "meat",  name: "Grillad gårdsgris",         price: "139:-", desc: "Bearnaisesås, tomatsallad, pommes frites och rödvinsås." },
+          { type: "salad", name: "Caesarsallad",               price: "139:-", desc: "Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano." },
+        ]},
+      },
+      drinks: [
+        { id: "d1", name: "Mineralvatten", price: "25:-" },
+        { id: "d2", name: "Läsk",         price: "25:-" },
+      ],
+      events: [
+        { id: "e1", date: "2026-07-03", start: "18:00", end: "22:00", type: "open",    name: "Sommarsupé på altanen",   desc: "Tre-rätters meny med fokus på västkustens råvaror. Boka bord i förväg.", recurring: null },
+        { id: "e2", date: "2026-07-09", start: "17:00", end: "23:00", type: "private", name: "Privat bokning",           desc: "Lokalen är bokad för ett privat firande denna kväll.", recurring: null },
+        { id: "e3", date: "2026-07-16", start: "18:30", end: "21:30", type: "open",    name: "Vinprovning: Rhônedalen",  desc: "Fem viner, lätta tilltugg och en kort guidning. Begränsat antal platser.", recurring: { type: "monthly", end: "2026-12-31" } },
+      ],
+      dishLibrary: [
+        { id: "lib1", type: "veg",   name: "Rödbetsbiff",              price: "139:-", desc: "Smörsås, getost och rostad valnöt." },
+        { id: "lib2", type: "meat",  name: "Biff Rydberg",             price: "149:-", desc: "Smörfräst oxfilé, potatistärningar, senap och rödlök." },
+        { id: "lib3", type: "fish",  name: "Gravlax med hovmästarsås", price: "139:-", desc: "Dillkokt potatis och kapris." },
+        { id: "lib4", type: "salad", name: "Nicoise",                  price: "139:-", desc: "Tonfisk, ägg, oliver, haricots verts och kapris." },
+      ],
+      eventTemplates: [
+        { id: "t1", start: "18:00", end: "22:00", type: "open",    name: "Temakvällar",   desc: "Boka bord i förväg via telefon." },
+        { id: "t2", start: "17:00", end: "23:00", type: "private", name: "Privat bokning", desc: "Lokalen är bokad för ett privat firande denna kväll." },
+      ],
+      admins: [
+        { username: "admin",         name: "Admin",          mustChange: false },
+        { username: "anna.svensson", name: "Anna Svensson",  mustChange: false },
+      ],
+      about: {
+        title: "Mat som smakar något.",
+        p1: "Leir startade med en enkel idé: att laga riktigt bra lunch varje vardag, utan krångel. Vi lagar allt från grunden — fyra alternativ per dag, alltid ett vegetariskt, ett fisk, ett kött och en sallad.",
+        p2: "Vi sitter på Ullevigatan mitt i Göteborg och har hållit på sedan 2018. Välkommen in.",
+        stats: [
+          { num: "2018", label: "Grundat" },
+          { num: "5",    label: "Dagar i veckan" },
+          { num: "4",    label: "Alternativ varje dag" },
+          { num: "139",  label: "Kronor per rätt" },
+        ],
+      },
+    };
+    function readKey(key, fallback) {
+      try { const raw = localStorage.getItem(STORAGE_PREFIX + key); return raw === null ? fallback : JSON.parse(raw); }
+      catch (e) { return fallback; }
+    }
+    function writeKey(key, value) {
+      try { localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)); return true; }
+      catch (e) { return false; }
+    }
+    function ensureSeeded() {
+      Object.keys(DEFAULTS).forEach((key) => {
+        if (localStorage.getItem(STORAGE_PREFIX + key) === null) writeKey(key, DEFAULTS[key]);
+      });
+    }
+    window.LeirData = {
+      DEFAULTS,
+      init() { ensureSeeded(); },
+      get(key) { return readKey(key, DEFAULTS[key]); },
+      set(key, value) { return writeKey(key, value); },
+      getMenu() { return this.get("menu"); },
+      getDrinks() { return this.get("drinks"); },
+      getEvents() { return this.get("events"); },
+      getDishLibrary() { return this.get("dishLibrary"); },
+      getEventTemplates() { return this.get("eventTemplates"); },
+      getAdmins() { return this.get("admins"); },
+      getAbout() { return this.get("about"); },
+      setMenu(v) { return this.set("menu", v); },
+      setDrinks(v) { return this.set("drinks", v); },
+      setEvents(v) { return this.set("events", v); },
+      setDishLibrary(v) { return this.set("dishLibrary", v); },
+      setEventTemplates(v) { return this.set("eventTemplates", v); },
+      setAdmins(v) { return this.set("admins", v); },
+      setAbout(v) { return this.set("about", v); },
+      resetAll() { Object.keys(DEFAULTS).forEach((key) => writeKey(key, DEFAULTS[key])); },
+      expandEvents(events, rangeStart, rangeEnd) {
+        const out = [];
+        const start = new Date(rangeStart + "T00:00:00");
+        const end = new Date(rangeEnd + "T23:59:59");
+        events.forEach((e) => {
+          if (!e.recurring) {
+            const d = new Date(e.date + "T00:00:00");
+            if (d >= start && d <= end) out.push(e);
+            return;
+          }
+          const step = e.recurring.type === "weekly" ? 7 : e.recurring.type === "biweekly" ? 14 : null;
+          const recurEnd = new Date((e.recurring.end || e.date) + "T23:59:59");
+          let cursor = new Date(e.date + "T00:00:00");
+          if (step) {
+            while (cursor <= end && cursor <= recurEnd) {
+              if (cursor >= start) out.push({ ...e, date: cursor.toISOString().slice(0, 10) });
+              cursor = new Date(cursor.getTime() + step * 86400000);
+            }
+          } else {
+            while (cursor <= end && cursor <= recurEnd) {
+              if (cursor >= start) out.push({ ...e, date: cursor.toISOString().slice(0, 10) });
+              const next = new Date(cursor);
+              next.setMonth(next.getMonth() + 1);
+              cursor = next;
+            }
+          }
+        });
+        return out.sort((a, b) => a.date.localeCompare(b.date));
+      },
+    };
+  })();
+}
+</script>
 <style>
 :root{
   --bg:#F5F1EB;--bg-off:#EDE8DF;--ink:#2D2926;
@@ -184,6 +326,9 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 </style>
 </head>
 <body>
+<div id="dataMissingBanner" style="display:none;background:#8B2020;color:#fff;font-family:'Space Mono',monospace;font-size:12px;text-align:center;padding:10px 16px;position:sticky;top:0;z-index:100">
+  ⚠ data.js kunde inte laddas — sidan visar reservdata. Kontrollera att data.js finns i samma mapp på servern.
+</div>
 
 <nav>
   <div class="logo">Leir<em>.</em></div>
@@ -320,6 +465,10 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 
 <script>
 LeirData.init();
+if (window.__leirDataMissing) {
+  const banner = document.getElementById('dataMissingBanner');
+  if (banner) banner.style.display = 'block';
+}
 
 // ── HELPERS ───────────────────────────────────────────────────────
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
