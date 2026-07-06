@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leir — Admin</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="data.js"></script>
 <style>
 :root{
   --bg:#F5F1EB;--bg-off:#EDE8DF;--ink:#2D2926;
@@ -114,6 +116,8 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
 .library-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
 .library-card-price{font-family:'Space Mono',monospace;font-size:11px;color:var(--walnut)}
 .library-add-btn{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);background:var(--green-bg);border:none;padding:4px 10px;border-radius:20px;cursor:pointer}
+.library-remove-btn{font-size:12px;color:#8B2020;background:none;border:none;cursor:pointer;padding:4px 6px;line-height:1}
+.library-remove-btn:hover{text-decoration:underline}
 .library-empty{padding:28px;text-align:center;color:var(--dim);font-size:13px}
 .save-to-lib-btn{font-size:12px;color:var(--sage);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:4px 8px;white-space:nowrap}
 .save-to-lib-btn:hover{color:var(--walnut)}
@@ -194,6 +198,7 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
   <div class="topbar-right">
     <span class="saved-flash" id="savedMsg">✓ Sparad</span>
     <span class="topbar-user">Anna Svensson</span>
+    <button class="btn btn-ghost" onclick="window.open('index.html','_blank')">Visa sidan ↗</button>
     <button class="btn btn-ghost" onclick="showChangePw()">Lösenord</button>
     <button class="btn btn-ghost" onclick="window.location='index.html'">Logga ut</button>
   </div>
@@ -374,69 +379,15 @@ input:focus,textarea:focus,select:focus{border-color:var(--walnut)}
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────
-const MENU={
-  mon:{subtitle:'Veckan börjar tryggt',dishes:[
-    {type:'veg',name:'Friterad lasagne',price:'139:-',desc:'Tomatsås, rucolasallad och riven grana padano.'},
-    {type:'fish',name:'Smörstekt dagens fångst',price:'139:-',desc:'Remouladsås, dillkokt potatis, pepparrot och dill- & gurksallad.'},
-    {type:'meat',name:'BBQ-glaserad gårdsgris',price:'139:-',desc:"Friterad mac 'n cheese, chipotle skysås och spicy slaw."},
-    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
-  ]},
-  tue:{subtitle:'Smaker från öst & väst',dishes:[
-    {type:'veg',name:'Tikka masala',price:'139:-',desc:'Grönsaker och bönor med grillad halloumi, jasminris och koriander.'},
-    {type:'fish',name:'Laxfärserad dagens fångst',price:'139:-',desc:'Smörad skaldjursbuljong, saffransaioli och potatispuré.'},
-    {type:'meat',name:'Schnitzel',price:'139:-',desc:'Vispat västerbottensmör, rödvinsås, rostad potatis och gröna ärtor.'},
-    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
-  ]},
-  wed:{subtitle:'Halvvägs, med kraftiga smaker',dishes:[
-    {type:'veg',name:'Okonomiyaki',price:'139:-',desc:'Sesamkål, edamamebönor, jasminris, chilimajonäs och furikake.'},
-    {type:'fish',name:'Fisk- & skaldjursgryta',price:'139:-',desc:'Bohusländsk gryta med rotfrukter, aioli och vitlöksbröd.'},
-    {type:'meat',name:'Kalv wallenbergare',price:'139:-',desc:'Gräddsås, potatispuré, pressgurka och rårörda lingon.'},
-    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
-  ]},
-  thu:{subtitle:'Rotfrukter i centrum',dishes:[
-    {type:'veg',name:'Rotfruktsbiff',price:'139:-',desc:'Ört- & västerbottenostsås, puré på palsternacka och broccoli.'},
-    {type:'fish',name:'Vitvinspocherad fångst',price:'139:-',desc:'Puré på palsternacka, citronsås och broccoli.'},
-    {type:'meat',name:'Kycklingfärsbiff',price:'139:-',desc:'Currysås, jasminris, mangochutney, jordnötter och pak choy.'},
-    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
-  ]},
-  fri:{subtitle:'Veckan avslutas på topp',dishes:[
-    {type:'veg',name:'Sesampanerad rotselleri',price:'139:-',desc:'Rosmarin- & hallonsky-rostad svamp och potatispuré.'},
-    {type:'fish',name:'Dillrimmad dagens fångst',price:'139:-',desc:'Sandefjordsås, bakade tomater och potatispuré.'},
-    {type:'meat',name:'Grillad gårdsgris',price:'139:-',desc:'Bearnaisesås, tomatsallad, pommes frites och rödvinsås.'},
-    {type:'salad',name:'Caesarsallad',price:'139:-',desc:'Romansallad, caesardressing, bacon, grillad kyckling, krutonger och grana padano.'},
-  ]},
-};
+LeirData.init();
 
-let drinks=[
-  {id:'d1',name:'Mineralvatten',price:'25:-'},
-  {id:'d2',name:'Läsk',price:'25:-'},
-];
-
-let events=[
-  {id:'e1',date:'2026-07-03',start:'18:00',end:'22:00',type:'open',name:'Sommarsupé på altanen',desc:'Tre-rätters meny med fokus på västkustens råvaror.'},
-  {id:'e2',date:'2026-07-09',start:'17:00',end:'23:00',type:'private',name:'Privat bokning',desc:'Lokalen är bokad för ett privat firande.'},
-  {id:'e3',date:'2026-07-16',start:'18:30',end:'21:30',type:'open',name:'Vinprovning: Rhônedalen',desc:'Fem viner, lätta tilltugg och kort guidning.',recurring:{type:'monthly',end:'2026-12-31'}},
-];
-
-// Saved dish library
-let dishLibrary=[
-  {id:'lib1',type:'veg',name:'Rödbetsbiff',price:'139:-',desc:'Smörsås, getost och rostad valnöt.'},
-  {id:'lib2',type:'meat',name:'Biff Rydberg',price:'149:-',desc:'Smörfräst oxfilé, potatistärningar, senap och rödlök.'},
-  {id:'lib3',type:'fish',name:'Gravlax med hovmästarsås',price:'139:-',desc:'Dillkokt potatis och kapris.'},
-  {id:'lib4',type:'salad',name:'Nicoise',price:'139:-',desc:'Tonfisk, ägg, oliver, haricots verts och kapris.'},
-];
-
-// Saved event templates
-let eventTemplates=[
-  {id:'t1',start:'18:00',end:'22:00',type:'open',name:'Temakvällar',desc:'Boka bord i förväg via telefon.'},
-  {id:'t2',start:'17:00',end:'23:00',type:'private',name:'Privat bokning',desc:'Lokalen är bokad för ett privat firande denna kväll.'},
-];
-
-let admins=[
-  {username:'admin',name:'Admin',mustChange:false},
-  {username:'anna.svensson',name:'Anna Svensson',mustChange:false},
-];
+// ── LIVE DATA (loaded from LeirData / localStorage) ─────────────────
+let MENU=LeirData.getMenu();
+let drinks=LeirData.getDrinks();
+let events=LeirData.getEvents();
+let dishLibrary=LeirData.getDishLibrary();
+let eventTemplates=LeirData.getEventTemplates();
+let admins=LeirData.getAdmins();
 
 const ME='anna.svensson';
 
@@ -518,13 +469,18 @@ function renderMenu(){
   const libCards=dishLibrary.length===0
     ? '<div class="library-empty">Inga sparade rätter ännu. Spara en rätt med ⊕-knappen ovan.</div>'
     : '<div class="library-grid">'+dishLibrary.map(d=>`
-        <div class="library-card" onclick="addDishFromLibrary('${d.id}')">
-          ${tagHtml(d.type)}
-          <div class="library-card-name">${esc(d.name)}</div>
-          <div class="library-card-desc">${esc(d.desc)}</div>
+        <div class="library-card">
+          <div onclick="addDishFromLibrary('${d.id}')" style="cursor:pointer">
+            ${tagHtml(d.type)}
+            <div class="library-card-name">${esc(d.name)}</div>
+            <div class="library-card-desc">${esc(d.desc)}</div>
+          </div>
           <div class="library-card-footer">
             <span class="library-card-price">${esc(d.price)}</span>
-            <button class="library-add-btn" onclick="event.stopPropagation();addDishFromLibrary('${d.id}')">+ Lägg till</button>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="library-add-btn" onclick="addDishFromLibrary('${d.id}')">+ Lägg till</button>
+              <button class="library-remove-btn" onclick="confirmRemoveFromLibrary('${d.id}')" title="Ta bort från bibliotek">✕</button>
+            </div>
           </div>
         </div>
       `).join('')+'</div>';
@@ -546,21 +502,24 @@ function renderMenu(){
   `;
 }
 
-function saveSubtitle(val){MENU[activeDay].subtitle=val;flash();}
+function persistMenu(){LeirData.setMenu(MENU);}
+
+function saveSubtitle(val){MENU[activeDay].subtitle=val;persistMenu();flash();}
 function saveDishField(idx,field,val){
   MENU[activeDay].dishes[idx][field]=val;
+  persistMenu();
   if(field==='type')renderMenu();
   else flash();
 }
 function addBlankDish(){
   MENU[activeDay].dishes.push({type:'veg',name:'',price:'139:-',desc:''});
+  persistMenu();
   renderMenu();
-  // Scroll to bottom of dish list
   setTimeout(()=>document.getElementById('menuPanel').scrollIntoView({block:'end',behavior:'smooth'}),50);
 }
 function confirmRemoveDish(idx){
   showConfirm(`Ta bort "${MENU[activeDay].dishes[idx].name||'rätten'}"?`,()=>{
-    MENU[activeDay].dishes.splice(idx,1);renderMenu();flash();
+    MENU[activeDay].dishes.splice(idx,1);persistMenu();renderMenu();flash();
   });
 }
 
@@ -571,31 +530,48 @@ function toggleLibrary(){
   toggle.classList.toggle('open');
   panel.classList.toggle('open');
 }
+function persistLibrary(){LeirData.setDishLibrary(dishLibrary);}
 function saveDishToLibrary(idx){
   const d=MENU[activeDay].dishes[idx];
   if(!d.name){alert('Ge rätten ett namn innan du sparar den.');return;}
   const existing=dishLibrary.findIndex(x=>x.name===d.name);
   if(existing>=0){if(!confirm(`"${d.name}" finns redan i biblioteket. Ersätt?`))return;dishLibrary.splice(existing,1);}
-  dishLibrary.push({id:'lib'+Date.now(),...d});
+  dishLibrary.push({id:'lib'+Date.now(),type:d.type,name:d.name,price:d.price,desc:d.desc});
+  persistLibrary();
   renderMenu();flash();
+  keepLibraryOpen();
 }
 function addDishFromLibrary(id){
   const d=dishLibrary.find(x=>x.id===id);
   if(!d)return;
   MENU[activeDay].dishes.push({type:d.type,name:d.name,price:d.price,desc:d.desc});
+  persistMenu();
   renderMenu();
-  // Keep library open
+  keepLibraryOpen();
+  flash();
+}
+function confirmRemoveFromLibrary(id){
+  const d=dishLibrary.find(x=>x.id===id);
+  showConfirm(`Ta bort "${d?.name||'rätten'}" från biblioteket?`,()=>{
+    dishLibrary=dishLibrary.filter(x=>x.id!==id);
+    persistLibrary();
+    renderMenu();
+    keepLibraryOpen();
+    flash();
+  });
+}
+function keepLibraryOpen(){
   setTimeout(()=>{
     const t=document.getElementById('libToggle');
     const p=document.getElementById('libraryPanel');
-    if(!t.classList.contains('open')){t.classList.add('open');p.classList.add('open');}
+    if(t&&!t.classList.contains('open')){t.classList.add('open');p.classList.add('open');}
   },50);
-  flash();
 }
 
 renderMenu();
 
 // ── DRINKS ────────────────────────────────────────────────────────
+function persistDrinks(){LeirData.setDrinks(drinks);}
 function renderDrinks(){
   document.getElementById('drinkList').innerHTML=drinks.map(d=>`
     <div class="drink-item">
@@ -611,11 +587,11 @@ function renderDrinks(){
     </div>
   `).join('');
 }
-function saveDrink(id,field,val){drinks=drinks.map(d=>d.id===id?{...d,[field]:val}:d);flash();}
-function addDrink(){drinks.push({id:'d'+Date.now(),name:'',price:''});renderDrinks();}
+function saveDrink(id,field,val){drinks=drinks.map(d=>d.id===id?{...d,[field]:val}:d);persistDrinks();flash();}
+function addDrink(){drinks.push({id:'d'+Date.now(),name:'',price:''});persistDrinks();renderDrinks();}
 function confirmRemoveDrink(id){
   const d=drinks.find(x=>x.id===id);
-  showConfirm(`Ta bort "${d?.name||'drycken'}"?`,()=>{drinks=drinks.filter(x=>x.id!==id);renderDrinks();flash();});
+  showConfirm(`Ta bort "${d?.name||'drycken'}"?`,()=>{drinks=drinks.filter(x=>x.id!==id);persistDrinks();renderDrinks();flash();});
 }
 renderDrinks();
 
@@ -628,10 +604,12 @@ function fmtRecur(r){
   return `${labels[r.type]||r.type} till ${r.end}`;
 }
 
+function persistEvents(){LeirData.setEvents(events);}
+function persistTemplates(){LeirData.setEventTemplates(eventTemplates);}
+
 function renderEvents(){
   const tab=document.getElementById('eventTab');
 
-  // Templates section
   const tplCards=eventTemplates.length===0
     ? ''
     : `<div class="template-section">
@@ -648,7 +626,6 @@ function renderEvents(){
         </div>
       </div>`;
 
-  // Upcoming events
   const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=new Date()).sort((a,b)=>a.date.localeCompare(b.date));
   const past=events.filter(e=>new Date(e.date+'T'+e.end)<new Date()).sort((a,b)=>b.date.localeCompare(a.date));
 
@@ -744,19 +721,22 @@ function saveEvent(){
     const tpl={id:'t'+Date.now(),start:e.start,end:e.end,type:e.type,name:e.name,desc:e.desc};
     if(existing>=0)eventTemplates[existing]=tpl;
     else eventTemplates.push(tpl);
+    persistTemplates();
   }
   if(editingEventId){events=events.map(x=>x.id===editingEventId?e:x);}
   else events.push(e);
   events.sort((a,b)=>a.date.localeCompare(b.date));
+  persistEvents();
   closeEventModal();renderEvents();flash();
 }
 function confirmDeleteEvent(id){
   const e=events.find(x=>x.id===id);
-  showConfirm(`Ta bort "${e?.name}"?`,()=>{events=events.filter(x=>x.id!==id);renderEvents();flash();});
+  showConfirm(`Ta bort "${e?.name}"?`,()=>{events=events.filter(x=>x.id!==id);persistEvents();renderEvents();flash();});
 }
 renderEvents();
 
 // ── ADMINS ────────────────────────────────────────────────────────
+function persistAdmins(){LeirData.setAdmins(admins);}
 function renderAdmins(){
   document.getElementById('adminList').innerHTML=admins.map(a=>`
     <div class="admin-item">
@@ -782,6 +762,7 @@ function addAdmin(){
   if(password.length<6){errEl.textContent='Lösenord måste vara minst 6 tecken.';errEl.style.display='block';return;}
   if(admins.find(a=>a.username===username)){errEl.textContent='Användarnamnet är redan taget.';errEl.style.display='block';return;}
   admins.push({username,name,mustChange:false});
+  persistAdmins();
   ['newName','newUsername','newPassword'].forEach(id=>document.getElementById(id).value='');
   renderAdmins();flash();
 }
@@ -789,7 +770,7 @@ function confirmRemoveAdmin(username){
   if(username===ME){return;}
   const a=admins.find(x=>x.username===username);
   showConfirm(`Ta bort kontot "${a?.name}" (@${username})?`,()=>{
-    admins=admins.filter(x=>x.username!==username);renderAdmins();flash();
+    admins=admins.filter(x=>x.username!==username);persistAdmins();renderAdmins();flash();
   });
 }
 renderAdmins();

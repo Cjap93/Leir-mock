@@ -5,11 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leir — Veckans Meny</title>
 <meta name="description" content="Lunchrestaurang i Göteborg. Ny meny varje vardag — vegetariskt, fisk, kött & sallad. Öppet 11.00–14.00, Ullevigatan 17–19.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:type" content="website">
 <meta property="og:title" content="Leir — Veckans Meny">
 <meta property="og:description" content="Lunchrestaurang i Göteborg. Ny meny varje vardag, alltid lagad från grunden.">
+<meta property="og:image" content="og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Restaurant","name":"Leir","telephone":"+46313031056","address":{"@type":"PostalAddress","streetAddress":"Ullevigatan 17-19","postalCode":"411 40","addressLocality":"Göteborg","addressCountry":"SE"},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"11:00","closes":"14:00"}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="data.js"></script>
 <style>
 :root{
   --bg:#F5F1EB;--bg-off:#EDE8DF;--ink:#2D2926;
@@ -211,18 +216,10 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 <!-- OM OSS -->
 <section class="section" id="about">
   <span class="eyebrow sec-eyebrow">Om Leir</span>
-  <h2 class="sh">Mat som smakar<br><em style="font-style:italic;color:var(--rust)">något.</em></h2>
+  <h2 class="sh" id="aboutTitle">Mat som smakar något.</h2>
   <div class="about-grid">
-    <div class="about-text">
-      <p>Leir startade med en enkel idé: att laga riktigt bra lunch varje vardag, utan krångel. Vi lagar allt från grunden — fyra alternativ per dag, alltid ett vegetariskt, ett fisk, ett kött och en sallad.</p>
-      <p>Vi sitter på Ullevigatan mitt i Göteborg och har hållit på sedan 2018. Välkommen in.</p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat"><div class="stat-num">2018</div><div class="stat-lbl">Grundat</div></div>
-      <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Dagar i veckan</div></div>
-      <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">Alternativ varje dag</div></div>
-      <div class="stat"><div class="stat-num">139</div><div class="stat-lbl">Kronor per rätt</div></div>
-    </div>
+    <div class="about-text" id="aboutText"></div>
+    <div class="stats-grid" id="aboutStats"></div>
   </div>
 </section>
 
@@ -236,7 +233,7 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
     <p>Fyra alternativ varje dag. Alltid 139 kr.</p>
   </div>
 
-  <div class="day-tabs" role="tablist">
+  <div class="day-tabs" role="tablist" id="dayTabs">
     <button class="day-tab" role="tab" data-day="mon" aria-selected="true">MÅN</button>
     <button class="day-tab" role="tab" data-day="tue" aria-selected="false">TIS</button>
     <button class="day-tab" role="tab" data-day="wed" aria-selected="false">ONS</button>
@@ -249,69 +246,13 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
     Allergi? <a href="tel:0313031056">Ring oss</a> eller fråga i disken.
   </div>
 
-  <!-- MÅN -->
-  <div class="day-panel active" data-panel="mon">
-    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">MÅN</span></div><div><div class="panel-sub">Veckan börjar tryggt</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
-    <div class="dish-grid">
-      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Friterad lasagne</span><span class="dish-price">139:-</span></div><p class="dish-desc">Tomatsås, rucolasallad och riven grana padano.</p></div>
-      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Smörstekt dagens fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Remouladsås, dillkokt potatis, pepparrot och gurksallad.</p></div>
-      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">BBQ-glaserad gårdsgris</span><span class="dish-price">139:-</span></div><p class="dish-desc">Friterad mac 'n cheese, chipotle skysås och spicy slaw.</p></div>
-      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
-    </div>
-  </div>
-
-  <!-- TIS -->
-  <div class="day-panel" data-panel="tue">
-    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">TIS</span></div><div><div class="panel-sub">Smaker från öst &amp; väst</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
-    <div class="dish-grid">
-      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Tikka masala</span><span class="dish-price">139:-</span></div><p class="dish-desc">Grönsaker och bönor med grillad halloumi, jasminris och koriander.</p></div>
-      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Laxfärserad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Smörad skaldjursbuljong, saffransaioli och potatispuré.</p></div>
-      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Schnitzel</span><span class="dish-price">139:-</span></div><p class="dish-desc">Vispat västerbottensmör, rödvinsås, rostad potatis och gröna ärtor.</p></div>
-      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
-    </div>
-  </div>
-
-  <!-- ONS -->
-  <div class="day-panel" data-panel="wed">
-    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">ONS</span></div><div><div class="panel-sub">Halvvägs, med kraft</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
-    <div class="dish-grid">
-      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Okonomiyaki</span><span class="dish-price">139:-</span></div><p class="dish-desc">Sesamkål, edamamebönor, jasminris, chilimajonäs och furikake.</p></div>
-      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Fisk- &amp; skaldjursgryta</span><span class="dish-price">139:-</span></div><p class="dish-desc">Bohusländsk gryta med rotfrukter, aioli och vitlöksbröd.</p></div>
-      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Kalv wallenbergare</span><span class="dish-price">139:-</span></div><p class="dish-desc">Gräddsås, potatispuré, pressgurka och rårörda lingon.</p></div>
-      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
-    </div>
-  </div>
-
-  <!-- TOR -->
-  <div class="day-panel" data-panel="thu">
-    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">TOR</span></div><div><div class="panel-sub">Rotfrukter i centrum</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
-    <div class="dish-grid">
-      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Rotfruktsbiff</span><span class="dish-price">139:-</span></div><p class="dish-desc">Ört- &amp; västerbottenostsås, puré på palsternacka och broccoli.</p></div>
-      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Vitvinspocherad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Puré på palsternacka, citronsås och broccoli.</p></div>
-      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Kycklingfärsbiff</span><span class="dish-price">139:-</span></div><p class="dish-desc">Currysås, jasminris, mangochutney, jordnötter och pak choy.</p></div>
-      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
-    </div>
-  </div>
-
-  <!-- FRE -->
-  <div class="day-panel" data-panel="fri">
-    <div class="panel-top"><div class="stamp">DAGENS<span class="stamp-day">FRE</span></div><div><div class="panel-sub">Veckan avslutas på topp</div><div class="panel-meta">Fyra rätter · 139 kr</div></div></div>
-    <div class="dish-grid">
-      <div class="dish"><span class="dish-tag tag-veg"><span class="swatch"></span>Vegetariskt</span><div class="dish-name-row"><span class="dish-name">Sesampanerad rotselleri</span><span class="dish-price">139:-</span></div><p class="dish-desc">Rosmarin- &amp; hallonsky-rostad svamp och potatispuré.</p></div>
-      <div class="dish"><span class="dish-tag tag-fish"><span class="swatch"></span>Fisk</span><div class="dish-name-row"><span class="dish-name">Dillrimmad fångst</span><span class="dish-price">139:-</span></div><p class="dish-desc">Sandefjordsås, bakade tomater och potatispuré.</p></div>
-      <div class="dish"><span class="dish-tag tag-meat"><span class="swatch"></span>Kött</span><div class="dish-name-row"><span class="dish-name">Grillad gårdsgris</span><span class="dish-price">139:-</span></div><p class="dish-desc">Bearnaisesås, tomatsallad, pommes frites och rödvinsås.</p></div>
-      <div class="dish"><span class="dish-tag tag-salad"><span class="swatch"></span>Sallad</span><div class="dish-name-row"><span class="dish-name">Caesarsallad</span><span class="dish-price">139:-</span></div><p class="dish-desc">Romansallad, caesardressing, bacon, kyckling, krutonger och grana padano.</p></div>
-    </div>
-  </div>
+  <div id="menuPanels"></div>
 </section>
 
 <!-- DRYCK -->
 <section class="section">
   <h2 class="sh" style="font-size:clamp(22px,3.5vw,30px)">Dryck</h2>
-  <div class="drink-list">
-    <div class="drink-row"><span>Mineralvatten</span><span class="drink-price">25:-</span></div>
-    <div class="drink-row"><span>Läsk</span><span class="drink-price">25:-</span></div>
-  </div>
+  <div class="drink-list" id="drinkList"></div>
 </section>
 
 <!-- EVENEMANG -->
@@ -330,26 +271,7 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
     </div>
   </div>
 
-  <div class="event-cards">
-    <div class="event-card">
-      <span class="ev-type open"><span class="dot"></span>Öppet för alla</span>
-      <div class="ev-date-row"><span class="ev-date">3 jul</span><span class="ev-time">18:00–22:00</span></div>
-      <span class="ev-name">Sommarsupé på altanen</span>
-      <p class="ev-desc">Tre-rätters meny med fokus på västkustens råvaror. Boka bord i förväg.</p>
-    </div>
-    <div class="event-card">
-      <span class="ev-type private"><span class="dot"></span>Privat bokning</span>
-      <div class="ev-date-row"><span class="ev-date">9 jul</span><span class="ev-time">17:00–23:00</span></div>
-      <span class="ev-name">Privat bokning</span>
-      <p class="ev-desc">Lokalen är bokad för ett privat firande denna kväll.</p>
-    </div>
-    <div class="event-card">
-      <span class="ev-type open"><span class="dot"></span>Öppet för alla</span>
-      <div class="ev-date-row"><span class="ev-date">16 jul</span><span class="ev-time">18:30–21:30</span></div>
-      <span class="ev-name">Vinprovning: Rhônedalen</span>
-      <p class="ev-desc">Fem viner, lätta tilltugg och kort guidning. Begränsat antal platser.</p>
-    </div>
-  </div>
+  <div class="event-cards" id="eventCards"></div>
 
   <div class="cal-wrap" id="calWrap">
     <div class="calendar">
@@ -397,21 +319,115 @@ footer{background:var(--ink);color:var(--bg);padding:var(--sp) 5vw 40px;margin-t
 </footer>
 
 <script>
+LeirData.init();
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+const TAG_LBL={veg:'Vegetariskt',fish:'Fisk',meat:'Kött',salad:'Sallad'};
+const DAY_KEYS=['mon','tue','wed','thu','fri'];
+const DAY_LABELS={mon:'MÅN',tue:'TIS',wed:'ONS',thu:'TOR',fri:'FRE'};
+
 // ── WEEK ─────────────────────────────────────────────────────────
 function isoWeek(d){const dc=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const dn=dc.getUTCDay()||7;dc.setUTCDate(dc.getUTCDate()+4-dn);return Math.ceil((((dc-new Date(Date.UTC(dc.getUTCFullYear(),0,1)))/86400000)+1)/7);}
 document.getElementById('weekLabel').textContent='Vecka '+isoWeek(new Date());
 
-// ── STATUS ────────────────────────────────────────────────────────
-const EVENTS=[
-  {date:'2026-07-03',start:'18:00',end:'22:00',type:'open',name:'Sommarsupé på altanen'},
-  {date:'2026-07-09',start:'17:00',end:'23:00',type:'private',name:'Privat bokning'},
-  {date:'2026-07-16',start:'18:30',end:'21:30',type:'open',name:'Vinprovning: Rhônedalen'},
-];
+// ── ABOUT ─────────────────────────────────────────────────────────
+function renderAbout(){
+  const about=LeirData.getAbout();
+  document.getElementById('aboutTitle').innerHTML=esc(about.title.replace(' något.','')) + ' <em style="font-style:italic;color:var(--rust)">något.</em>';
+  document.getElementById('aboutText').innerHTML=`<p>${esc(about.p1)}</p><p>${esc(about.p2)}</p>`;
+  document.getElementById('aboutStats').innerHTML=about.stats.map(s=>`
+    <div class="stat"><div class="stat-num">${esc(s.num)}</div><div class="stat-lbl">${esc(s.label)}</div></div>
+  `).join('');
+}
+renderAbout();
+
+// ── MENU ──────────────────────────────────────────────────────────
+let activeDay='mon';
+function renderMenu(){
+  const menu=LeirData.getMenu();
+  const day=menu[activeDay];
+  if(!day)return;
+  const dishesHtml=day.dishes.map(d=>`
+    <div class="dish">
+      <span class="dish-tag tag-${d.type}"><span class="swatch"></span>${TAG_LBL[d.type]||d.type}</span>
+      <div class="dish-name-row"><span class="dish-name">${esc(d.name)}</span><span class="dish-price">${esc(d.price)}</span></div>
+      <p class="dish-desc">${esc(d.desc)}</p>
+    </div>
+  `).join('');
+  document.getElementById('menuPanels').innerHTML=`
+    <div class="panel-top">
+      <div class="stamp">DAGENS<span class="stamp-day">${DAY_LABELS[activeDay]}</span></div>
+      <div><div class="panel-sub">${esc(day.subtitle)}</div><div class="panel-meta">Fyra rätter · 139 kr</div></div>
+    </div>
+    <div class="dish-grid">${dishesHtml}</div>
+  `;
+}
+document.querySelectorAll('.day-tab').forEach((tab,i,tabs)=>{
+  tab.addEventListener('click',()=>selectDayTab(tab,false));
+  tab.addEventListener('keydown',e=>{
+    let t=null;
+    if(e.key==='ArrowRight')t=tabs[(i+1)%tabs.length];
+    else if(e.key==='ArrowLeft')t=tabs[(i-1+tabs.length)%tabs.length];
+    if(t){e.preventDefault();selectDayTab(t,true);}
+  });
+});
+function selectDayTab(tab,focus){
+  document.querySelectorAll('.day-tab').forEach(t=>{t.setAttribute('aria-selected','false');t.tabIndex=-1;});
+  tab.setAttribute('aria-selected','true');tab.tabIndex=0;
+  if(focus)tab.focus();
+  activeDay=tab.dataset.day;
+  renderMenu();
+}
+const tk=DAY_KEYS[new Date().getDay()-1];
+const initialTab=document.querySelector(`.day-tab[data-day="${tk||'mon'}"]`)||document.querySelector('.day-tab');
+if(initialTab)selectDayTab(initialTab,false);
+
+// ── DRINKS ────────────────────────────────────────────────────────
+function renderDrinks(){
+  const drinks=LeirData.getDrinks();
+  document.getElementById('drinkList').innerHTML=drinks.map(d=>`
+    <div class="drink-row"><span>${esc(d.name)}</span><span class="drink-price">${esc(d.price)}</span></div>
+  `).join('');
+}
+renderDrinks();
+
+// ── EVENTS + STATUS ───────────────────────────────────────────────
+function getExpandedEvents(){
+  const raw=LeirData.getEvents();
+  const now=new Date();
+  const rangeStart=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,10);
+  const rangeEnd=new Date(now.getFullYear(),now.getMonth()+6,0).toISOString().slice(0,10);
+  return LeirData.expandEvents(raw,rangeStart,rangeEnd);
+}
+
+function fmtDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString('sv-SE',{day:'numeric',month:'short'});}
+
+function renderEventCards(){
+  const events=getExpandedEvents();
+  const now=new Date();
+  const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=now).slice(0,3);
+  const el=document.getElementById('eventCards');
+  if(!upcoming.length){
+    el.innerHTML='<div style="border:1px solid var(--line);padding:40px 20px;text-align:center;color:var(--dim);font-size:14px;grid-column:1/-1">Inga planerade kvällsevenemang just nu.</div>';
+    return;
+  }
+  el.innerHTML=upcoming.map(e=>`
+    <div class="event-card">
+      <span class="ev-type ${e.type}"><span class="dot"></span>${e.type==='open'?'Öppet för alla':'Privat bokning'}</span>
+      <div class="ev-date-row"><span class="ev-date">${fmtDate(e.date)}</span><span class="ev-time">${esc(e.start)}–${esc(e.end)}</span></div>
+      <span class="ev-name">${esc(e.name)}</span>
+      <p class="ev-desc">${esc(e.desc)}</p>
+    </div>
+  `).join('');
+}
+
 function updateStatus(){
+  const events=getExpandedEvents();
   const now=new Date(),d=now.getDay(),m=now.getHours()*60+now.getMinutes();
   const wd=d>=1&&d<=5,lunch=wd&&m>=660&&m<840;
   const ds=now.toISOString().slice(0,10);
-  const evt=EVENTS.find(e=>e.date===ds&&e.type==='open');
+  const evt=events.find(e=>e.date===ds&&e.type==='open');
   let eS=0,eE=0,eO=false;
   if(evt){eS=+evt.start.split(':')[0]*60+ +evt.start.split(':')[1];eE=+evt.end.split(':')[0]*60+ +evt.end.split(':')[1];eO=m>=eS&&m<eE;}
   const b=document.getElementById('statusBadge'),t=document.getElementById('statusText');
@@ -420,29 +436,26 @@ function updateStatus(){
   else if(evt&&m<eS){b.className='status closed';t.textContent=`Öppnar ${evt.start} ikväll`;}
   else{b.className='status closed';t.textContent=wd&&m<660?'Öppnar 11.00':'Stängt';}
 }
-updateStatus();setInterval(updateStatus,30000);
 
-// ── DAY TABS ──────────────────────────────────────────────────────
-const tabs=Array.from(document.querySelectorAll('.day-tab'));
-const panels=document.querySelectorAll('.day-panel');
-function selectTab(tab,focus){
-  tabs.forEach(t=>{t.setAttribute('aria-selected','false');t.tabIndex=-1;});
-  tab.setAttribute('aria-selected','true');tab.tabIndex=0;
-  if(focus)tab.focus();
-  panels.forEach(p=>p.classList.toggle('active',p.dataset.panel===tab.dataset.day));
-}
-tabs.forEach((tab,i)=>{
-  tab.tabIndex=tab.getAttribute('aria-selected')==='true'?0:-1;
-  tab.addEventListener('click',()=>selectTab(tab,false));
-  tab.addEventListener('keydown',e=>{
-    let t=null;
-    if(e.key==='ArrowRight')t=tabs[(i+1)%tabs.length];
-    else if(e.key==='ArrowLeft')t=tabs[(i-1+tabs.length)%tabs.length];
-    if(t){e.preventDefault();selectTab(t,true);}
-  });
+renderEventCards();
+updateStatus();
+setInterval(()=>{updateStatus();},30000);
+
+// Re-render everything if admin changes localStorage in another tab
+window.addEventListener('storage',(e)=>{
+  if(e.key && e.key.indexOf('leir:')===0){
+    renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+  }
 });
-const tk={1:'mon',2:'tue',3:'wed',4:'thu',5:'fri'}[new Date().getDay()];
-if(tk){const t=tabs.find(x=>x.dataset.day===tk);if(t)selectTab(t,false);}
+// Also re-check when the tab regains focus (covers same-tab admin->public navigation via back button, and multi-tab demos)
+window.addEventListener('focus',()=>{
+  renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+});
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'){
+    renderAbout();renderMenu();renderDrinks();renderEventCards();updateStatus();renderCal();
+  }
+});
 
 // ── CALENDAR ──────────────────────────────────────────────────────
 let calDate=new Date();calDate.setDate(1);
@@ -452,18 +465,21 @@ function renderCal(){
   document.getElementById('calLabel').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
   const ts=new Date().toISOString().slice(0,10);
   const g=document.getElementById('calGrid');
+  const monthStart=`${y}-${String(mo+1).padStart(2,'0')}-01`;
+  const monthEnd=`${y}-${String(mo+1).padStart(2,'0')}-${String(new Date(y,mo+1,0).getDate()).padStart(2,'0')}`;
+  const events=LeirData.expandEvents(LeirData.getEvents(),monthStart,monthEnd);
   let h=['Mån','Tis','Ons','Tor','Fre','Lör','Sön'].map(d=>`<div class="cal-wday">${d}</div>`).join('');
   const off=(new Date(y,mo,1).getDay()||7)-1;
   for(let i=0;i<off;i++)h+=`<div class="cal-day empty"></div>`;
   const dim=new Date(y,mo+1,0).getDate();
   for(let d=1;d<=dim;d++){
     const ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const evs=EVENTS.filter(e=>e.date===ds);
+    const evs=events.filter(e=>e.date===ds);
     const today=ds===ts;
     const num=today?`<span class="cal-num" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:11px">${d}</span>`:`<span class="cal-num">${d}</span>`;
     const dots=evs.length?`<div class="ev-dot-row">${evs.map(e=>`<span class="ev-dot ${e.type}"></span>`).join('')}</div>`:'';
-    const lbl=evs[0]?`<span class="cal-ev-lbl">${evs[0].name}</span>`:'';
-    h+=`<div class="cal-day${today?' today':''}">${num}${dots}${lbl}</div>`;
+    const lbl2=evs[0]?`<span class="cal-ev-lbl">${esc(evs[0].name)}</span>`:'';
+    h+=`<div class="cal-day${today?' today':''}">${num}${dots}${lbl2}</div>`;
   }
   g.innerHTML=h;
 }
