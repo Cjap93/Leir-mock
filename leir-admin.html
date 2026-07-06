@@ -100,7 +100,16 @@ if (typeof LeirData === 'undefined') {
     window.LeirData = {
       DEFAULTS,
       init() { ensureSeeded(); },
-      get(key) { return readKey(key, DEFAULTS[key]); },
+      get(key) {
+        const stored = readKey(key, undefined);
+        const fallback = DEFAULTS[key];
+        if (stored === undefined) return fallback;
+        if (fallback && typeof fallback === 'object' && !Array.isArray(fallback) &&
+            stored && typeof stored === 'object' && !Array.isArray(stored)) {
+          return { ...fallback, ...stored };
+        }
+        return stored;
+      },
       set(key, value) { return writeKey(key, value); },
       getMenu() { return this.get("menu"); },
       getDrinks() { return this.get("drinks"); },
@@ -613,15 +622,15 @@ if (window.__leirDataMissing) {
 }
 
 // ── LIVE DATA (loaded from LeirData / localStorage) ─────────────────
-let MENU=LeirData.getMenu();
-let drinks=LeirData.getDrinks();
-let events=LeirData.getEvents();
-let dishLibrary=LeirData.getDishLibrary();
-let eventTemplates=LeirData.getEventTemplates();
-let admins=LeirData.getAdmins();
-let settings=LeirData.getSettings();
-let about=LeirData.getAbout();
-let theme=LeirData.getTheme();
+let MENU=LeirData.getMenu()||LeirData.DEFAULTS.menu;
+let drinks=LeirData.getDrinks()||LeirData.DEFAULTS.drinks;
+let events=LeirData.getEvents()||LeirData.DEFAULTS.events;
+let dishLibrary=LeirData.getDishLibrary()||LeirData.DEFAULTS.dishLibrary;
+let eventTemplates=LeirData.getEventTemplates()||LeirData.DEFAULTS.eventTemplates;
+let admins=LeirData.getAdmins()||LeirData.DEFAULTS.admins;
+let settings={...LeirData.DEFAULTS.settings,...LeirData.getSettings()};
+let about={...LeirData.DEFAULTS.about,...LeirData.getAbout()};
+let theme={...LeirData.DEFAULTS.theme,...LeirData.getTheme()};
 
 const ME='anna.svensson';
 
@@ -666,74 +675,77 @@ document.querySelectorAll('.day-tab').forEach(tab=>{
 const DAY_NAMES={mon:'Måndag',tue:'Tisdag',wed:'Onsdag',thu:'Torsdag',fri:'Fredag'};
 
 function renderMenu(){
-  const day=MENU[activeDay];
-  const panel=document.getElementById('menuPanel');
+  try{
+    const day=MENU[activeDay];
+    const panel=document.getElementById('menuPanel');
 
-  const dishRows=day.dishes.map((d,i)=>`
-    <div class="dish-item">
-      <div class="dish-item-top">
-        ${tagHtml(d.type)}
-        <div class="dish-item-actions">
-          <button class="save-to-lib-btn" onclick="saveDishToLibrary(${i})" title="Spara till bibliotek">⊕ Spara</button>
-          <button class="link-btn danger" onclick="confirmRemoveDish(${i})">Ta bort</button>
-        </div>
-      </div>
-      <div class="grid-3" style="margin-bottom:10px">
-        <div>
-          <label class="field-label">Kategori</label>
-          <select onchange="saveDishField(${i},'type',this.value)">${['veg','fish','meat','salad'].map(t=>`<option value="${t}"${d.type===t?' selected':''}>${TAG_LBL[t]}</option>`).join('')}</select>
-        </div>
-        <div>
-          <label class="field-label">Namn</label>
-          <input type="text" value="${esc(d.name)}" onblur="saveDishField(${i},'name',this.value)" autocomplete="off">
-        </div>
-        <div>
-          <label class="field-label">Pris</label>
-          <input type="text" value="${esc(d.price)}" onblur="saveDishField(${i},'price',this.value)">
-        </div>
-      </div>
-      <div>
-        <label class="field-label">Beskrivning</label>
-        <textarea onblur="saveDishField(${i},'desc',this.value)">${esc(d.desc)}</textarea>
-      </div>
-    </div>
-  `).join('');
-
-  // Library section
-  const libCards=dishLibrary.length===0
-    ? '<div class="library-empty">Inga sparade rätter ännu. Spara en rätt med ⊕-knappen ovan.</div>'
-    : '<div class="library-grid">'+dishLibrary.map(d=>`
-        <div class="library-card">
-          <div onclick="addDishFromLibrary('${d.id}')" style="cursor:pointer">
-            ${tagHtml(d.type)}
-            <div class="library-card-name">${esc(d.name)}</div>
-            <div class="library-card-desc">${esc(d.desc)}</div>
+    const dishRows=day.dishes.map((d,i)=>`
+      <div class="dish-item">
+        <div class="dish-item-top">
+          ${tagHtml(d.type)}
+          <div class="dish-item-actions">
+            <button class="save-to-lib-btn" onclick="saveDishToLibrary(${i})" title="Spara till bibliotek">⊕ Spara</button>
+            <button class="link-btn danger" onclick="confirmRemoveDish(${i})">Ta bort</button>
           </div>
-          <div class="library-card-footer">
-            <span class="library-card-price">${esc(d.price)}</span>
-            <div style="display:flex;gap:6px;align-items:center">
-              <button class="library-add-btn" onclick="addDishFromLibrary('${d.id}')">+ Lägg till</button>
-              <button class="library-remove-btn" onclick="confirmRemoveFromLibrary('${d.id}')" title="Ta bort från bibliotek">✕</button>
+        </div>
+        <div class="grid-3" style="margin-bottom:10px">
+          <div>
+            <label class="field-label">Kategori</label>
+            <select onchange="saveDishField(${i},'type',this.value)">${['veg','fish','meat','salad'].map(t=>`<option value="${t}"${d.type===t?' selected':''}>${TAG_LBL[t]}</option>`).join('')}</select>
+          </div>
+          <div>
+            <label class="field-label">Namn</label>
+            <input type="text" value="${esc(d.name)}" onblur="saveDishField(${i},'name',this.value)" autocomplete="off">
+          </div>
+          <div>
+            <label class="field-label">Pris</label>
+            <input type="text" value="${esc(d.price)}" onblur="saveDishField(${i},'price',this.value)">
+          </div>
+        </div>
+        <div>
+          <label class="field-label">Beskrivning</label>
+          <textarea onblur="saveDishField(${i},'desc',this.value)">${esc(d.desc)}</textarea>
+        </div>
+      </div>
+    `).join('');
+
+    // Library section
+    const libCards=dishLibrary.length===0
+      ? '<div class="library-empty">Inga sparade rätter ännu. Spara en rätt med ⊕-knappen ovan.</div>'
+      : '<div class="library-grid">'+dishLibrary.map(d=>`
+          <div class="library-card">
+            <div onclick="addDishFromLibrary('${d.id}')" style="cursor:pointer">
+              ${tagHtml(d.type)}
+              <div class="library-card-name">${esc(d.name)}</div>
+              <div class="library-card-desc">${esc(d.desc)}</div>
+            </div>
+            <div class="library-card-footer">
+              <span class="library-card-price">${esc(d.price)}</span>
+              <div style="display:flex;gap:6px;align-items:center">
+                <button class="library-add-btn" onclick="addDishFromLibrary('${d.id}')">+ Lägg till</button>
+                <button class="library-remove-btn" onclick="confirmRemoveFromLibrary('${d.id}')" title="Ta bort från bibliotek">✕</button>
+              </div>
             </div>
           </div>
-        </div>
-      `).join('')+'</div>';
+        `).join('')+'</div>';
 
-  panel.innerHTML=`
-    <div class="subtitle-wrap">
-      <label class="field-label">Undertitel för ${DAY_NAMES[activeDay]}</label>
-      <input type="text" value="${esc(day.subtitle)}" onblur="saveSubtitle(this.value)" autocomplete="off">
-    </div>
-    <div class="dish-list">${dishRows}</div>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-      <button class="btn btn-secondary btn-sm" onclick="addBlankDish()">+ Tom rätt</button>
-    </div>
-    <button class="library-toggle" id="libToggle" onclick="toggleLibrary()">
-      <span class="library-toggle-label">Bibliotek — sparade rätter (${dishLibrary.length})</span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="library-panel" id="libraryPanel">${libCards}</div>
-  `;
+    panel.innerHTML=`
+      <div class="subtitle-wrap">
+        <label class="field-label">Undertitel för ${DAY_NAMES[activeDay]}</label>
+        <input type="text" value="${esc(day.subtitle)}" onblur="saveSubtitle(this.value)" autocomplete="off">
+      </div>
+      <div class="dish-list">${dishRows}</div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="addBlankDish()">+ Tom rätt</button>
+      </div>
+      <button class="library-toggle" id="libToggle" onclick="toggleLibrary()">
+        <span class="library-toggle-label">Bibliotek — sparade rätter (${dishLibrary.length})</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="library-panel" id="libraryPanel">${libCards}</div>
+    `;
+
+  }catch(e){ console.error('renderMenu misslyckades:',e); }
 }
 
 function persistMenu(){LeirData.setMenu(MENU);}
@@ -807,19 +819,22 @@ renderMenu();
 // ── DRINKS ────────────────────────────────────────────────────────
 function persistDrinks(){LeirData.setDrinks(drinks);}
 function renderDrinks(){
-  document.getElementById('drinkList').innerHTML=drinks.map(d=>`
-    <div class="drink-item">
-      <div>
-        <label class="field-label">Namn</label>
-        <input type="text" value="${esc(d.name)}" onblur="saveDrink('${d.id}','name',this.value)" autocomplete="off">
+  try{
+    document.getElementById('drinkList').innerHTML=drinks.map(d=>`
+      <div class="drink-item">
+        <div>
+          <label class="field-label">Namn</label>
+          <input type="text" value="${esc(d.name)}" onblur="saveDrink('${d.id}','name',this.value)" autocomplete="off">
+        </div>
+        <div>
+          <label class="field-label">Pris</label>
+          <input type="text" value="${esc(d.price)}" onblur="saveDrink('${d.id}','price',this.value)">
+        </div>
+        <button class="btn btn-icon" style="align-self:flex-end;color:#8B2020;border-color:rgba(139,32,32,.2)" onclick="confirmRemoveDrink('${d.id}')">✕</button>
       </div>
-      <div>
-        <label class="field-label">Pris</label>
-        <input type="text" value="${esc(d.price)}" onblur="saveDrink('${d.id}','price',this.value)">
-      </div>
-      <button class="btn btn-icon" style="align-self:flex-end;color:#8B2020;border-color:rgba(139,32,32,.2)" onclick="confirmRemoveDrink('${d.id}')">✕</button>
-    </div>
-  `).join('');
+    `).join('');
+
+  }catch(e){ console.error('renderDrinks misslyckades:',e); }
 }
 function saveDrink(id,field,val){drinks=drinks.map(d=>d.id===id?{...d,[field]:val}:d);persistDrinks();flash();}
 function addDrink(){drinks.push({id:'d'+Date.now(),name:'',price:''});persistDrinks();renderDrinks();}
@@ -842,61 +857,64 @@ function persistEvents(){LeirData.setEvents(events);}
 function persistTemplates(){LeirData.setEventTemplates(eventTemplates);}
 
 function renderEvents(){
-  const tab=document.getElementById('eventTab');
+  try{
+    const tab=document.getElementById('eventTab');
 
-  const tplCards=eventTemplates.length===0
-    ? ''
-    : `<div class="template-section">
-        <div class="template-section-title">Mallar — klicka för att skapa event</div>
-        <div class="template-grid">
-          ${eventTemplates.map(t=>`
-            <div class="template-card" onclick="createFromTemplate('${t.id}')">
-              <span class="badge ${t.type==='open'?'badge-open':'badge-private'}">${t.type==='open'?'Öppet':'Privat'}</span>
-              <div class="template-name">${esc(t.name)}</div>
-              <div class="template-meta">${esc(t.start)}–${esc(t.end)}</div>
-              <div style="font-size:12px;color:var(--mid);margin-top:2px">${esc(t.desc)}</div>
+    const tplCards=eventTemplates.length===0
+      ? ''
+      : `<div class="template-section">
+          <div class="template-section-title">Mallar — klicka för att skapa event</div>
+          <div class="template-grid">
+            ${eventTemplates.map(t=>`
+              <div class="template-card" onclick="createFromTemplate('${t.id}')">
+                <span class="badge ${t.type==='open'?'badge-open':'badge-private'}">${t.type==='open'?'Öppet':'Privat'}</span>
+                <div class="template-name">${esc(t.name)}</div>
+                <div class="template-meta">${esc(t.start)}–${esc(t.end)}</div>
+                <div style="font-size:12px;color:var(--mid);margin-top:2px">${esc(t.desc)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>`;
+
+    const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=new Date()).sort((a,b)=>a.date.localeCompare(b.date));
+    const past=events.filter(e=>new Date(e.date+'T'+e.end)<new Date()).sort((a,b)=>b.date.localeCompare(a.date));
+
+    function evHtml(e){
+      return `<div class="event-item">
+        <div class="event-item-row">
+          <div style="flex-grow:1">
+            <div class="event-meta">
+              <span class="event-date-badge">${esc(e.date)}</span>
+              <span class="event-time-badge">${esc(e.start)}–${esc(e.end)}</span>
+              <span class="badge ${e.type==='open'?'badge-open':'badge-private'}">${e.type==='open'?'Öppet':'Privat'}</span>
+              ${e.recurring?`<span class="badge badge-recurring">${fmtRecur(e.recurring)}</span>`:''}
             </div>
-          `).join('')}
-        </div>
-      </div>`;
-
-  const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=new Date()).sort((a,b)=>a.date.localeCompare(b.date));
-  const past=events.filter(e=>new Date(e.date+'T'+e.end)<new Date()).sort((a,b)=>b.date.localeCompare(a.date));
-
-  function evHtml(e){
-    return `<div class="event-item">
-      <div class="event-item-row">
-        <div style="flex-grow:1">
-          <div class="event-meta">
-            <span class="event-date-badge">${esc(e.date)}</span>
-            <span class="event-time-badge">${esc(e.start)}–${esc(e.end)}</span>
-            <span class="badge ${e.type==='open'?'badge-open':'badge-private'}">${e.type==='open'?'Öppet':'Privat'}</span>
-            ${e.recurring?`<span class="badge badge-recurring">${fmtRecur(e.recurring)}</span>`:''}
+          </div>
+          <div class="event-actions">
+            <button class="btn btn-secondary btn-sm" onclick="editEvent('${e.id}')">Redigera</button>
+            <button class="btn btn-danger btn-sm" onclick="confirmDeleteEvent('${e.id}')">Ta bort</button>
           </div>
         </div>
-        <div class="event-actions">
-          <button class="btn btn-secondary btn-sm" onclick="editEvent('${e.id}')">Redigera</button>
-          <button class="btn btn-danger btn-sm" onclick="confirmDeleteEvent('${e.id}')">Ta bort</button>
-        </div>
-      </div>
-      <div class="event-name">${esc(e.name)}</div>
-      <div class="event-desc">${esc(e.desc)}</div>
-    </div>`;
-  }
+        <div class="event-name">${esc(e.name)}</div>
+        <div class="event-desc">${esc(e.desc)}</div>
+      </div>`;
+    }
 
-  const upcomingHtml=upcoming.length
-    ? `<div style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut);margin-bottom:10px">Kommande (${upcoming.length})</div>
-       <div class="event-list" style="margin-bottom:24px">${upcoming.map(evHtml).join('')}</div>`
-    : `<div style="border:1px solid var(--line);padding:36px 20px;text-align:center;color:var(--dim);font-size:14px;margin-bottom:24px">Inga kommande evenemang.</div>`;
+    const upcomingHtml=upcoming.length
+      ? `<div style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--walnut);margin-bottom:10px">Kommande (${upcoming.length})</div>
+         <div class="event-list" style="margin-bottom:24px">${upcoming.map(evHtml).join('')}</div>`
+      : `<div style="border:1px solid var(--line);padding:36px 20px;text-align:center;color:var(--dim);font-size:14px;margin-bottom:24px">Inga kommande evenemang.</div>`;
 
-  const pastHtml=past.length
-    ? `<details style="margin-top:8px">
-        <summary style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);cursor:pointer;padding:10px 0;list-style:none">Tidigare (${past.length})</summary>
-        <div class="event-list" style="margin-top:8px;opacity:.7">${past.map(evHtml).join('')}</div>
-      </details>`
-    : '';
+    const pastHtml=past.length
+      ? `<details style="margin-top:8px">
+          <summary style="font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);cursor:pointer;padding:10px 0;list-style:none">Tidigare (${past.length})</summary>
+          <div class="event-list" style="margin-top:8px;opacity:.7">${past.map(evHtml).join('')}</div>
+        </details>`
+      : '';
 
-  tab.innerHTML=tplCards+upcomingHtml+pastHtml;
+    tab.innerHTML=tplCards+upcomingHtml+pastHtml;
+
+  }catch(e){ console.error('renderEvents misslyckades:',e); }
 }
 
 function openEventModal(id){
@@ -972,19 +990,22 @@ renderEvents();
 // ── ADMINS ────────────────────────────────────────────────────────
 function persistAdmins(){LeirData.setAdmins(admins);}
 function renderAdmins(){
-  document.getElementById('adminList').innerHTML=admins.map(a=>`
-    <div class="admin-item">
-      <div>
-        <div class="admin-name">${esc(a.name)}</div>
-        <div class="admin-username">
-          @${esc(a.username)}
-          ${a.mustChange?'<span class="badge badge-warn">Byt lösenord</span>':''}
-          ${a.username===ME?'<span class="badge badge-open">Du</span>':''}
+  try{
+    document.getElementById('adminList').innerHTML=admins.map(a=>`
+      <div class="admin-item">
+        <div>
+          <div class="admin-name">${esc(a.name)}</div>
+          <div class="admin-username">
+            @${esc(a.username)}
+            ${a.mustChange?'<span class="badge badge-warn">Byt lösenord</span>':''}
+            ${a.username===ME?'<span class="badge badge-open">Du</span>':''}
+          </div>
         </div>
+        <button class="btn btn-danger btn-sm" ${a.username===ME?'disabled':''} onclick="confirmRemoveAdmin('${a.username}')">Ta bort</button>
       </div>
-      <button class="btn btn-danger btn-sm" ${a.username===ME?'disabled':''} onclick="confirmRemoveAdmin('${a.username}')">Ta bort</button>
-    </div>
-  `).join('');
+    `).join('');
+
+  }catch(e){ console.error('renderAdmins misslyckades:',e); }
 }
 function addAdmin(){
   const name=document.getElementById('newName').value.trim();
@@ -1015,29 +1036,32 @@ function persistAbout(){LeirData.setAbout(about);}
 function persistTheme(){LeirData.setTheme(theme);LeirData.applyTheme();}
 
 function fillSettingsForm(){
-  document.getElementById('setHeroEyebrow').value=settings.heroEyebrow;
-  document.getElementById('setHeroBtn').value=settings.heroButtonText;
-  document.getElementById('setHeroLine1').value=settings.heroTitleLine1;
-  document.getElementById('setHeroLine2').value=settings.heroTitleLine2;
-  document.getElementById('setOpenDays').value=settings.openDays;
-  document.getElementById('setOpenTime').value=settings.openTime;
-  document.getElementById('setAddr1').value=settings.address1;
-  document.getElementById('setAddr2').value=settings.address2;
-  document.getElementById('setPhone').value=settings.phone;
-  document.getElementById('setPhoneHref').value=settings.phoneHref;
-  document.getElementById('setEmail').value=settings.email;
-  document.getElementById('setInstagram').value=settings.instagram;
-  document.getElementById('setMapUrl').value=settings.mapUrl;
-  document.getElementById('setAllergen').value=settings.allergenText;
-  document.getElementById('setFooterDesc').value=settings.footerDesc;
-  document.getElementById('setEveningNote').value=settings.eveningNote;
+  try{
+    document.getElementById('setHeroEyebrow').value=settings.heroEyebrow;
+    document.getElementById('setHeroBtn').value=settings.heroButtonText;
+    document.getElementById('setHeroLine1').value=settings.heroTitleLine1;
+    document.getElementById('setHeroLine2').value=settings.heroTitleLine2;
+    document.getElementById('setOpenDays').value=settings.openDays;
+    document.getElementById('setOpenTime').value=settings.openTime;
+    document.getElementById('setAddr1').value=settings.address1;
+    document.getElementById('setAddr2').value=settings.address2;
+    document.getElementById('setPhone').value=settings.phone;
+    document.getElementById('setPhoneHref').value=settings.phoneHref;
+    document.getElementById('setEmail').value=settings.email;
+    document.getElementById('setInstagram').value=settings.instagram;
+    document.getElementById('setMapUrl').value=settings.mapUrl;
+    document.getElementById('setAllergen').value=settings.allergenText;
+    document.getElementById('setFooterDesc').value=settings.footerDesc;
+    document.getElementById('setEveningNote').value=settings.eveningNote;
 
-  document.getElementById('setAboutTitle').value=about.title;
-  document.getElementById('setAboutP1').value=about.p1;
-  document.getElementById('setAboutP2').value=about.p2;
+    document.getElementById('setAboutTitle').value=about.title;
+    document.getElementById('setAboutP1').value=about.p1;
+    document.getElementById('setAboutP2').value=about.p2;
 
-  renderStatsEdit();
-  renderColorGrid();
+    renderStatsEdit();
+    renderColorGrid();
+
+  }catch(e){ console.error('fillSettingsForm misslyckades:',e); }
 }
 
 function saveSetting(key,val){
@@ -1053,12 +1077,15 @@ function saveAbout(key,val){
 
 // Stats editor (4 boxes: number + label)
 function renderStatsEdit(){
-  document.getElementById('statsEditGrid').innerHTML=about.stats.map((s,i)=>`
-    <div class="stat-edit-item">
-      <input type="text" value="${esc(s.num)}" onblur="saveStat(${i},'num',this.value)" placeholder="2018">
-      <input type="text" value="${esc(s.label)}" onblur="saveStat(${i},'label',this.value)" placeholder="Grundat">
-    </div>
-  `).join('');
+  try{
+    document.getElementById('statsEditGrid').innerHTML=(about.stats||LeirData.DEFAULTS.about.stats).map((s,i)=>`
+      <div class="stat-edit-item">
+        <input type="text" value="${esc(s.num)}" onblur="saveStat(${i},'num',this.value)" placeholder="2018">
+        <input type="text" value="${esc(s.label)}" onblur="saveStat(${i},'label',this.value)" placeholder="Grundat">
+      </div>
+    `).join('');
+
+  }catch(e){ console.error('renderStatsEdit misslyckades:',e); }
 }
 function saveStat(idx,field,val){
   about.stats[idx][field]=val;
@@ -1069,15 +1096,18 @@ function saveStat(idx,field,val){
 // Color theme editor
 const THEME_LABELS={bg:'Bakgrund',ink:'Text (mörk)',rust:'Accent (terrakotta)',walnut:'Accent (valnöt)',sage:'Accent (salvia)'};
 function renderColorGrid(){
-  document.getElementById('colorGrid').innerHTML=Object.keys(THEME_LABELS).map(key=>`
-    <div class="color-item">
-      <label class="field-label">${THEME_LABELS[key]}</label>
-      <div class="color-swatch-row">
-        <input type="color" value="${theme[key]}" oninput="saveColor('${key}',this.value);document.getElementById('colorText_${key}').value=this.value" id="colorPicker_${key}">
-        <input type="text" value="${esc(theme[key])}" id="colorText_${key}" onblur="saveColor('${key}',this.value);document.getElementById('colorPicker_${key}').value=this.value">
+  try{
+    document.getElementById('colorGrid').innerHTML=Object.keys(THEME_LABELS).map(key=>`
+      <div class="color-item">
+        <label class="field-label">${THEME_LABELS[key]}</label>
+        <div class="color-swatch-row">
+          <input type="color" value="${theme[key]}" oninput="saveColor('${key}',this.value);document.getElementById('colorText_${key}').value=this.value" id="colorPicker_${key}">
+          <input type="text" value="${esc(theme[key])}" id="colorText_${key}" onblur="saveColor('${key}',this.value);document.getElementById('colorPicker_${key}').value=this.value">
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+
+  }catch(e){ console.error('renderColorGrid misslyckades:',e); }
 }
 function saveColor(key,val){
   if(!/^#[0-9A-Fa-f]{6}$/.test(val))return; // ignore invalid hex while typing

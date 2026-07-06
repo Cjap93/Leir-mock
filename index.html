@@ -107,7 +107,16 @@ if (typeof LeirData === 'undefined') {
     window.LeirData = {
       DEFAULTS,
       init() { ensureSeeded(); },
-      get(key) { return readKey(key, DEFAULTS[key]); },
+      get(key) {
+        const stored = readKey(key, undefined);
+        const fallback = DEFAULTS[key];
+        if (stored === undefined) return fallback;
+        if (fallback && typeof fallback === 'object' && !Array.isArray(fallback) &&
+            stored && typeof stored === 'object' && !Array.isArray(stored)) {
+          return { ...fallback, ...stored };
+        }
+        return stored;
+      },
       set(key, value) { return writeKey(key, value); },
       getMenu() { return this.get("menu"); },
       getDrinks() { return this.get("drinks"); },
@@ -473,6 +482,7 @@ if (window.__leirDataMissing) {
 
 // ── HELPERS ───────────────────────────────────────────────────────
 function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function safeRender(fn,label){ try{ fn(); }catch(e){ console.error((label||fn.name)+' misslyckades:',e); } }
 const TAG_LBL={veg:'Vegetariskt',fish:'Fisk',meat:'Kött',salad:'Sallad'};
 const DAY_KEYS=['mon','tue','wed','thu','fri'];
 const DAY_LABELS={mon:'MÅN',tue:'TIS',wed:'ONS',thu:'TOR',fri:'FRE'};
@@ -483,60 +493,67 @@ document.getElementById('weekLabel').textContent='Vecka '+isoWeek(new Date());
 
 // ── SETTINGS (hero, kontakt, footer) ───────────────────────────────
 function renderSettings(){
-  const s=LeirData.getSettings();
+  try{
+    const d=LeirData.DEFAULTS.settings;
+    const s={...d,...LeirData.getSettings()};
 
-  document.getElementById('heroEyebrow').textContent=s.heroEyebrow;
-  document.getElementById('heroTitle').innerHTML=`${esc(s.heroTitleLine1)}<br><em>${esc(s.heroTitleLine2)}</em>`;
-  document.getElementById('heroBtn').innerHTML=`${esc(s.heroButtonText)} ↓`;
-  document.getElementById('heroMeta').innerHTML=`${esc(s.openDays)} <b>${esc(s.openTime)}</b><br>${esc(s.address1)}`;
+    document.getElementById('heroEyebrow').textContent=s.heroEyebrow;
+    document.getElementById('heroTitle').innerHTML=`${esc(s.heroTitleLine1)}<br><em>${esc(s.heroTitleLine2)}</em>`;
+    document.getElementById('heroBtn').innerHTML=`${esc(s.heroButtonText)} ↓`;
+    document.getElementById('heroMeta').innerHTML=`${esc(s.openDays)} <b>${esc(s.openTime)}</b><br>${esc(s.address1)}`;
 
-  document.getElementById('allergenText').innerHTML=`${esc(s.allergenText.replace(/Ring oss\.?/,'').trim())} <a href="tel:${esc(s.phoneHref)}">Ring oss</a>`;
+    document.getElementById('allergenText').innerHTML=`${esc((s.allergenText||'').replace(/Ring oss\.?/,'').trim())} <a href="tel:${esc(s.phoneHref)}">Ring oss</a>`;
 
-  document.getElementById('footerDesc').textContent=s.footerDesc;
-  document.getElementById('footerIgLink').href=`https://instagram.com/${s.instagram}`;
-  document.getElementById('footerIgHandle').textContent=`@${s.instagram}`;
-  document.getElementById('footerAddr1').textContent=s.address1;
-  document.getElementById('footerAddr2').textContent=s.address2;
-  document.getElementById('footerMapLink').href=s.mapUrl;
-  document.getElementById('footerEmail').textContent=s.email;
-  document.getElementById('footerEmail').href=`mailto:${s.email}`;
-  document.getElementById('footerPhone').textContent=s.phone;
-  document.getElementById('footerPhone').href=`tel:${s.phoneHref}`;
-  document.getElementById('footerHours').innerHTML=`${esc(s.openDays)} ${esc(s.openTime)}<br>${esc(s.eveningNote)}`;
+    document.getElementById('footerDesc').textContent=s.footerDesc;
+    document.getElementById('footerIgLink').href=`https://instagram.com/${s.instagram}`;
+    document.getElementById('footerIgHandle').textContent=`@${s.instagram}`;
+    document.getElementById('footerAddr1').textContent=s.address1;
+    document.getElementById('footerAddr2').textContent=s.address2;
+    document.getElementById('footerMapLink').href=s.mapUrl;
+    document.getElementById('footerEmail').textContent=s.email;
+    document.getElementById('footerEmail').href=`mailto:${s.email}`;
+    document.getElementById('footerPhone').textContent=s.phone;
+    document.getElementById('footerPhone').href=`tel:${s.phoneHref}`;
+    document.getElementById('footerHours').innerHTML=`${esc(s.openDays)} ${esc(s.openTime)}<br>${esc(s.eveningNote)}`;
+  }catch(e){ console.error('renderSettings misslyckades:',e); }
 }
 renderSettings();
 
 // ── ABOUT ─────────────────────────────────────────────────────────
 function renderAbout(){
-  const about=LeirData.getAbout();
-  document.getElementById('aboutTitle').innerHTML=esc(about.title.replace(' något.','')) + ' <em style="font-style:italic;color:var(--rust)">något.</em>';
-  document.getElementById('aboutText').innerHTML=`<p>${esc(about.p1)}</p><p>${esc(about.p2)}</p>`;
-  document.getElementById('aboutStats').innerHTML=about.stats.map(s=>`
-    <div class="stat"><div class="stat-num">${esc(s.num)}</div><div class="stat-lbl">${esc(s.label)}</div></div>
-  `).join('');
+  try{
+    const about={...LeirData.DEFAULTS.about,...LeirData.getAbout()};
+    document.getElementById('aboutTitle').innerHTML=esc(about.title.replace(' något.','')) + ' <em style="font-style:italic;color:var(--rust)">något.</em>';
+    document.getElementById('aboutText').innerHTML=`<p>${esc(about.p1)}</p><p>${esc(about.p2)}</p>`;
+    document.getElementById('aboutStats').innerHTML=(about.stats||LeirData.DEFAULTS.about.stats).map(s=>`
+      <div class="stat"><div class="stat-num">${esc(s.num)}</div><div class="stat-lbl">${esc(s.label)}</div></div>
+    `).join('');
+  }catch(e){ console.error('renderAbout misslyckades:',e); }
 }
 renderAbout();
 
 // ── MENU ──────────────────────────────────────────────────────────
 let activeDay='mon';
 function renderMenu(){
-  const menu=LeirData.getMenu();
-  const day=menu[activeDay];
-  if(!day)return;
-  const dishesHtml=day.dishes.map(d=>`
-    <div class="dish">
-      <span class="dish-tag tag-${d.type}"><span class="swatch"></span>${TAG_LBL[d.type]||d.type}</span>
-      <div class="dish-name-row"><span class="dish-name">${esc(d.name)}</span><span class="dish-price">${esc(d.price)}</span></div>
-      <p class="dish-desc">${esc(d.desc)}</p>
-    </div>
-  `).join('');
-  document.getElementById('menuPanels').innerHTML=`
-    <div class="panel-top">
-      <div class="stamp">DAGENS<span class="stamp-day">${DAY_LABELS[activeDay]}</span></div>
-      <div><div class="panel-sub">${esc(day.subtitle)}</div><div class="panel-meta">Fyra rätter · 139 kr</div></div>
-    </div>
-    <div class="dish-grid">${dishesHtml}</div>
-  `;
+  try{
+    const menu=LeirData.getMenu()||LeirData.DEFAULTS.menu;
+    const day=menu[activeDay];
+    if(!day)return;
+    const dishesHtml=(day.dishes||[]).map(d=>`
+      <div class="dish">
+        <span class="dish-tag tag-${d.type}"><span class="swatch"></span>${TAG_LBL[d.type]||d.type}</span>
+        <div class="dish-name-row"><span class="dish-name">${esc(d.name)}</span><span class="dish-price">${esc(d.price)}</span></div>
+        <p class="dish-desc">${esc(d.desc)}</p>
+      </div>
+    `).join('');
+    document.getElementById('menuPanels').innerHTML=`
+      <div class="panel-top">
+        <div class="stamp">DAGENS<span class="stamp-day">${DAY_LABELS[activeDay]}</span></div>
+        <div><div class="panel-sub">${esc(day.subtitle)}</div><div class="panel-meta">Fyra rätter · 139 kr</div></div>
+      </div>
+      <div class="dish-grid">${dishesHtml}</div>
+    `;
+  }catch(e){ console.error('renderMenu misslyckades:',e); }
 }
 document.querySelectorAll('.day-tab').forEach((tab,i,tabs)=>{
   tab.addEventListener('click',()=>selectDayTab(tab,false));
@@ -560,56 +577,64 @@ if(initialTab)selectDayTab(initialTab,false);
 
 // ── DRINKS ────────────────────────────────────────────────────────
 function renderDrinks(){
-  const drinks=LeirData.getDrinks();
-  document.getElementById('drinkList').innerHTML=drinks.map(d=>`
-    <div class="drink-row"><span>${esc(d.name)}</span><span class="drink-price">${esc(d.price)}</span></div>
-  `).join('');
+  try{
+    const drinks=LeirData.getDrinks()||LeirData.DEFAULTS.drinks;
+    document.getElementById('drinkList').innerHTML=drinks.map(d=>`
+      <div class="drink-row"><span>${esc(d.name)}</span><span class="drink-price">${esc(d.price)}</span></div>
+    `).join('');
+  }catch(e){ console.error('renderDrinks misslyckades:',e); }
 }
 renderDrinks();
 
 // ── EVENTS + STATUS ───────────────────────────────────────────────
 function getExpandedEvents(){
-  const raw=LeirData.getEvents();
-  const now=new Date();
-  const rangeStart=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,10);
-  const rangeEnd=new Date(now.getFullYear(),now.getMonth()+6,0).toISOString().slice(0,10);
-  return LeirData.expandEvents(raw,rangeStart,rangeEnd);
+  try{
+    const raw=LeirData.getEvents()||LeirData.DEFAULTS.events;
+    const now=new Date();
+    const rangeStart=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().slice(0,10);
+    const rangeEnd=new Date(now.getFullYear(),now.getMonth()+6,0).toISOString().slice(0,10);
+    return LeirData.expandEvents(raw,rangeStart,rangeEnd);
+  }catch(e){ console.error('getExpandedEvents misslyckades:',e); return []; }
 }
 
 function fmtDate(iso){return new Date(iso+'T00:00:00').toLocaleDateString('sv-SE',{day:'numeric',month:'short'});}
 
 function renderEventCards(){
-  const events=getExpandedEvents();
-  const now=new Date();
-  const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=now).slice(0,3);
-  const el=document.getElementById('eventCards');
-  if(!upcoming.length){
-    el.innerHTML='<div style="border:1px solid var(--line);padding:40px 20px;text-align:center;color:var(--dim);font-size:14px;grid-column:1/-1">Inga planerade kvällsevenemang just nu.</div>';
-    return;
-  }
-  el.innerHTML=upcoming.map(e=>`
-    <div class="event-card">
-      <span class="ev-type ${e.type}"><span class="dot"></span>${e.type==='open'?'Öppet för alla':'Privat bokning'}</span>
-      <div class="ev-date-row"><span class="ev-date">${fmtDate(e.date)}</span><span class="ev-time">${esc(e.start)}–${esc(e.end)}</span></div>
-      <span class="ev-name">${esc(e.name)}</span>
-      <p class="ev-desc">${esc(e.desc)}</p>
-    </div>
-  `).join('');
+  try{
+    const events=getExpandedEvents();
+    const now=new Date();
+    const upcoming=events.filter(e=>new Date(e.date+'T'+e.end)>=now).slice(0,3);
+    const el=document.getElementById('eventCards');
+    if(!upcoming.length){
+      el.innerHTML='<div style="border:1px solid var(--line);padding:40px 20px;text-align:center;color:var(--dim);font-size:14px;grid-column:1/-1">Inga planerade kvällsevenemang just nu.</div>';
+      return;
+    }
+    el.innerHTML=upcoming.map(e=>`
+      <div class="event-card">
+        <span class="ev-type ${e.type}"><span class="dot"></span>${e.type==='open'?'Öppet för alla':'Privat bokning'}</span>
+        <div class="ev-date-row"><span class="ev-date">${fmtDate(e.date)}</span><span class="ev-time">${esc(e.start)}–${esc(e.end)}</span></div>
+        <span class="ev-name">${esc(e.name)}</span>
+        <p class="ev-desc">${esc(e.desc)}</p>
+      </div>
+    `).join('');
+  }catch(e){ console.error('renderEventCards misslyckades:',e); }
 }
 
 function updateStatus(){
-  const events=getExpandedEvents();
-  const now=new Date(),d=now.getDay(),m=now.getHours()*60+now.getMinutes();
-  const wd=d>=1&&d<=5,lunch=wd&&m>=660&&m<840;
-  const ds=now.toISOString().slice(0,10);
-  const evt=events.find(e=>e.date===ds&&e.type==='open');
-  let eS=0,eE=0,eO=false;
-  if(evt){eS=+evt.start.split(':')[0]*60+ +evt.start.split(':')[1];eE=+evt.end.split(':')[0]*60+ +evt.end.split(':')[1];eO=m>=eS&&m<eE;}
-  const b=document.getElementById('statusBadge'),t=document.getElementById('statusText');
-  if(lunch){b.className='status open';t.textContent=840-m<=30?`Stänger om ${840-m} min`:'Öppet nu — lunch';}
-  else if(eO){b.className='status open';t.textContent=eE-m<=30?`Stänger om ${eE-m} min`:`Öppet nu — ${evt.name}`;}
-  else if(evt&&m<eS){b.className='status closed';t.textContent=`Öppnar ${evt.start} ikväll`;}
-  else{b.className='status closed';t.textContent=wd&&m<660?'Öppnar 11.00':'Stängt';}
+  try{
+    const events=getExpandedEvents();
+    const now=new Date(),d=now.getDay(),m=now.getHours()*60+now.getMinutes();
+    const wd=d>=1&&d<=5,lunch=wd&&m>=660&&m<840;
+    const ds=now.toISOString().slice(0,10);
+    const evt=events.find(e=>e.date===ds&&e.type==='open');
+    let eS=0,eE=0,eO=false;
+    if(evt){eS=+evt.start.split(':')[0]*60+ +evt.start.split(':')[1];eE=+evt.end.split(':')[0]*60+ +evt.end.split(':')[1];eO=m>=eS&&m<eE;}
+    const b=document.getElementById('statusBadge'),t=document.getElementById('statusText');
+    if(lunch){b.className='status open';t.textContent=840-m<=30?`Stänger om ${840-m} min`:'Öppet nu — lunch';}
+    else if(eO){b.className='status open';t.textContent=eE-m<=30?`Stänger om ${eE-m} min`:`Öppet nu — ${evt.name}`;}
+    else if(evt&&m<eS){b.className='status closed';t.textContent=`Öppnar ${evt.start} ikväll`;}
+    else{b.className='status closed';t.textContent=wd&&m<660?'Öppnar 11.00':'Stängt';}
+  }catch(e){ console.error('updateStatus misslyckades:',e); }
 }
 
 renderEventCards();
@@ -635,28 +660,30 @@ document.addEventListener('visibilitychange',()=>{
 // ── CALENDAR ──────────────────────────────────────────────────────
 let calDate=new Date();calDate.setDate(1);
 function renderCal(){
-  const y=calDate.getFullYear(),mo=calDate.getMonth();
-  const lbl=calDate.toLocaleDateString('sv-SE',{month:'long',year:'numeric'});
-  document.getElementById('calLabel').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
-  const ts=new Date().toISOString().slice(0,10);
-  const g=document.getElementById('calGrid');
-  const monthStart=`${y}-${String(mo+1).padStart(2,'0')}-01`;
-  const monthEnd=`${y}-${String(mo+1).padStart(2,'0')}-${String(new Date(y,mo+1,0).getDate()).padStart(2,'0')}`;
-  const events=LeirData.expandEvents(LeirData.getEvents(),monthStart,monthEnd);
-  let h=['Mån','Tis','Ons','Tor','Fre','Lör','Sön'].map(d=>`<div class="cal-wday">${d}</div>`).join('');
-  const off=(new Date(y,mo,1).getDay()||7)-1;
-  for(let i=0;i<off;i++)h+=`<div class="cal-day empty"></div>`;
-  const dim=new Date(y,mo+1,0).getDate();
-  for(let d=1;d<=dim;d++){
-    const ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const evs=events.filter(e=>e.date===ds);
-    const today=ds===ts;
-    const num=today?`<span class="cal-num" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:11px">${d}</span>`:`<span class="cal-num">${d}</span>`;
-    const dots=evs.length?`<div class="ev-dot-row">${evs.map(e=>`<span class="ev-dot ${e.type}"></span>`).join('')}</div>`:'';
-    const lbl2=evs[0]?`<span class="cal-ev-lbl">${esc(evs[0].name)}</span>`:'';
-    h+=`<div class="cal-day${today?' today':''}">${num}${dots}${lbl2}</div>`;
-  }
-  g.innerHTML=h;
+  try{
+    const y=calDate.getFullYear(),mo=calDate.getMonth();
+    const lbl=calDate.toLocaleDateString('sv-SE',{month:'long',year:'numeric'});
+    document.getElementById('calLabel').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    const ts=new Date().toISOString().slice(0,10);
+    const g=document.getElementById('calGrid');
+    const monthStart=`${y}-${String(mo+1).padStart(2,'0')}-01`;
+    const monthEnd=`${y}-${String(mo+1).padStart(2,'0')}-${String(new Date(y,mo+1,0).getDate()).padStart(2,'0')}`;
+    const events=LeirData.expandEvents(LeirData.getEvents()||LeirData.DEFAULTS.events,monthStart,monthEnd);
+    let h=['Mån','Tis','Ons','Tor','Fre','Lör','Sön'].map(d=>`<div class="cal-wday">${d}</div>`).join('');
+    const off=(new Date(y,mo,1).getDay()||7)-1;
+    for(let i=0;i<off;i++)h+=`<div class="cal-day empty"></div>`;
+    const dim=new Date(y,mo+1,0).getDate();
+    for(let d=1;d<=dim;d++){
+      const ds=`${y}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const evs=events.filter(e=>e.date===ds);
+      const today=ds===ts;
+      const num=today?`<span class="cal-num" style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--bg);font-weight:700;font-size:11px">${d}</span>`:`<span class="cal-num">${d}</span>`;
+      const dots=evs.length?`<div class="ev-dot-row">${evs.map(e=>`<span class="ev-dot ${e.type}"></span>`).join('')}</div>`:'';
+      const lbl2=evs[0]?`<span class="cal-ev-lbl">${esc(evs[0].name)}</span>`:'';
+      h+=`<div class="cal-day${today?' today':''}">${num}${dots}${lbl2}</div>`;
+    }
+    g.innerHTML=h;
+  }catch(e){ console.error('renderCal misslyckades:',e); }
 }
 renderCal();
 document.getElementById('prevM').addEventListener('click',()=>{calDate.setMonth(calDate.getMonth()-1);renderCal();});
